@@ -1,10 +1,19 @@
 import 'dotenv/config';
 
 import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
 import Debug from 'debug';
+import './db/db';
 
 const app = express();
 const debug = Debug('t-issue:server');
+
+
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.send("Hello from tissue");
