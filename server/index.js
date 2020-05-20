@@ -1,13 +1,14 @@
-import 'dotenv/config';
+require('dotenv').config();
 
-import express from 'express';
-import path from 'path';
-import cookieParser from 'cookie-parser';
-import Debug from 'debug';
-import './db/db';
+require('./db/db');
+
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const debug = require('debug')('t-issue:server');
+
 
 const app = express();
-const debug = Debug('t-issue:server');
 
 
 app.use(cookieParser());

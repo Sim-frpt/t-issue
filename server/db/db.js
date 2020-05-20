@@ -1,8 +1,5 @@
-import Pgp from 'pg-promise';
-import Debug from 'debug';
-
-const debug = Debug("t-issue:db");
-const pgp = Pgp();
+const pgp = require('pg-promise')();
+const debug = require('debug')('t-issue:db');
 
 const connection = {
   host: process.env.DB_HOST,
@@ -24,4 +21,4 @@ db.connect()
     debug("ERROR: ", error.message || error);
   });
 
-export default db;
+module.exports = db;
