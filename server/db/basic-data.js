@@ -20,6 +20,7 @@ function createStatusData() {
     for (let result in data) {
       debug(`inserted "${data[result].name}" in status table`);
     }
+    console.log('\n');
   })
     .catch(err => debug(err))
 }
@@ -39,6 +40,7 @@ function createTagData() {
     for (let result in data) {
       debug(`inserted "${data[result].name}" in tag table`);
     }
+    console.log('\n');
   })
     .catch(err => debug(err))
 }
@@ -57,6 +59,7 @@ function createPriorityData() {
     for (let result in data) {
       debug(`inserted "${data[result].name}" in priority table`);
     }
+    console.log('\n');
   })
     .catch(err => debug(err))
 }
@@ -77,6 +80,7 @@ function createRoleData() {
     for (let result in data) {
       debug(`inserted "${data[result].name}" in role table`);
     }
+    console.log('\n');
   })
     .catch(err => debug(err))
     .finally(db.$pool.end);

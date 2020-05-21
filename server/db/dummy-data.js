@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 require('dotenv').config();
 
 const faker = require('faker');
@@ -41,7 +42,10 @@ function createProjectData() {
     }
 
     return results;
-  }).then( data =>  data.forEach(result => debug(`inserted "${result.name}" in project table`)))
+  }).then( data => {
+    data.forEach(result => debug(`inserted "${result.name}" in project table`))
+    console.log('\n');
+  })
     .catch(err => debug(err))
 }
 
@@ -73,20 +77,36 @@ function createUserData() {
 
     return results;
   }).then(data => {
-    data.forEach(result => {
-      debug('inserted %O into user table', result);
-    });
+    data.forEach(result => debug('inserted %O into user table', result));
+    console.log('\n');
   })
     .catch(err => debug(err))
 }
 
 function createProjectsUsersData() {
   return db.tx(async t => {
-    let projects = await t.any('SELECT * from project');
-    return projects;
+    let projects = await t.any('SELECT project_id from project');
+    let users = await t.any('select user_id from "user"');
+
+    let results = [];
+    for (let project of projects) {
+      let usersNumber = Math.floor(Math.random() * (users.length - 1) + 1);
+
+      for (let i = 0; i < usersNumber; i++) {
+        let query = await t.one(
+          'INSERT INTO projects_users(project_id, user_id) VALUES ($1, $2) RETURNING *',
+          [project.project_id, users[i].user_id]);
+
+        results.push(query);
+      }
+    }
+    return results;
   })
-    .then(data => console.log(data))
-    .catch(err => console.log(err));
+    .then(data => {
+      data.forEach(result => debug('inserted %O into project_users table', result));
+      console.log('\n');
+    })
+    .catch(err => debug(err));
 }
 
 createProjectData()
