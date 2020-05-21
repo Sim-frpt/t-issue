@@ -50,12 +50,6 @@ CREATE TABLE "projects_users" (
   FOREIGN KEY (project_id) REFERENCES "project" (project_id)
 );
 
-CREATE TABLE "comment" (
-  comment_id serial PRIMARY KEY,
-  text varchar(1000),
-  author_id INTEGER references "user" (user_id)
-);
-
 CREATE TABLE "issue" (
   issue_id serial PRIMARY KEY,
   title varchar(200),
@@ -67,6 +61,13 @@ CREATE TABLE "issue" (
   priority_id INTEGER references "priority" (priority_id),
   project_id INTEGER references "project" (project_id),
   status_id INTEGER references "status" (status_id),
-  comment_id INTEGER references "comment" (comment_id),
-  created TIMESTAMP default current_timestamp
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "comment" (
+  comment_id serial PRIMARY KEY,
+  text varchar(1000) NOT NULL,
+  author_id INTEGER references "user" (user_id) NOT NULL,
+  issue_id INTEGER references "issue" (issue_id) NOT NULL,
+  posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
