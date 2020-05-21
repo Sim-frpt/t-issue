@@ -20,7 +20,7 @@ function createStatusData() {
       debug(`inserted "${data[result].name}" in status table`);
     }
   })
-    .catch(err => debug(err));
+    .catch(err => debug(err))
 }
 
 function createProjectData() {
@@ -30,24 +30,65 @@ function createProjectData() {
     names[i] = faker.lorem.words();
   }
 
-  db.tx(t => {
-    results = [];
-    names.forEach(async (name, i) => {
-      results[i] = await t.one('INSERT INTO PROJECT(name) VALUES($1) RETURNING name', name);
-    });
+  return db.tx(async t => {
+    let results = [];
+
+    for (let name of names) {
+      const query = await t.one('INSERT INTO PROJECT(name) VALUES($1) RETURNING name', name);
+
+      results.push(query);
+    }
 
     return results;
   }).then( data =>  data.forEach(result => debug(`inserted "${result.name}" in project table`)))
-    .catch(err => debug(err));
+    .catch(err => debug(err))
 }
 
 function createUserData() {
-  const query = 'INSERT INTO user(first_name, last_name, email, password, role_id), VALUES($1, $2, $3, $4, $5) RETURNING user'
+  let selectQuery = 'SELECT role_id from role WHERE name = $1';
+  let insertQuery = 'INSERT INTO "user"(first_name, last_name, email, password, role_id) VALUES($1, $2, $3, $4, $5) RETURNING *';
 
-  //TODO
-  //db.tx(async t => {
-    //let a = await t.one(
-  //}
+  return db.tx(async t => {
+    let customer = await t.any(selectQuery, ['customer']);
+    let developer = await t.any(selectQuery, ['developer']);
+    let projectManager = await t.any(selectQuery, ['project manager']);
+    let admin = await t.any(selectQuery, ['admin']);
+
+    let roles = [ customer, developer, projectManager, admin ];
+
+    let results = [];
+
+    for (let role of roles) {
+      let queryResult =  await t.one(insertQuery, [
+        faker.name.firstName(),
+        faker.name.lastName(),
+        faker.internet.email(),
+        faker.internet.password(),
+        role[0].role_id
+      ]);
+
+      results.push(queryResult);
+    }
+
+    return results;
+  }).then(data => {
+    data.forEach(result => {
+      debug('inserted %O into user table', result);
+    });
+  })
+    .catch(err => debug(err))
 }
 
-createProjectData();
+function createProjectsUsersData() {
+  return db.tx(async t => {
+    let projects = await t.any('SELECT * from project');
+    return projects;
+  })
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+}
+
+createProjectData()
+  .then(createUserData)
+  .then(createProjectsUsersData)
+  .catch(err => debug(err));

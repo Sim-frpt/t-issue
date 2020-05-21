@@ -43,8 +43,8 @@ CREATE TABLE "user" (
 );
 
 CREATE TABLE "projects_users" (
-  user_id INTEGER NOT NULL,
   project_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
   PRIMARY KEY (user_id, project_id),
   FOREIGN KEY (user_id) REFERENCES "user" (user_id),
   FOREIGN KEY (project_id) REFERENCES "project" (project_id)

@@ -19,7 +19,7 @@ function createStatusData() {
       debug(`inserted "${data[result].name}" in status table`);
     }
   })
-    .catch(err => debug(err));
+    .catch(err => debug(err))
 }
 
 function createTagData() {
@@ -35,10 +35,10 @@ function createTagData() {
     return { a, b, c, d };
   }).then(data => {
     for (let result in data) {
-      debug(`inserted "${data[result].name}" in status table`);
+      debug(`inserted "${data[result].name}" in tag table`);
     }
   })
-    .catch(err => debug(err));
+    .catch(err => debug(err))
 }
 
 function createPriorityData() {
@@ -53,10 +53,10 @@ function createPriorityData() {
     return { a, b, c };
   }).then(data => {
     for (let result in data) {
-      debug(`inserted "${data[result].name}" in status table`);
+      debug(`inserted "${data[result].name}" in priority table`);
     }
   })
-    .catch(err => debug(err));
+    .catch(err => debug(err))
 }
 
 function createRoleData() {
@@ -73,10 +73,11 @@ function createRoleData() {
     return { a, b, c, d };
   }).then(data => {
     for (let result in data) {
-      debug(`inserted "${data[result].name}" in status table`);
+      debug(`inserted "${data[result].name}" in role table`);
     }
   })
-    .catch(err => debug(err));
+    .catch(err => debug(err))
+    .finally(db.$pool.end);
 }
 
 createStatusData();
