@@ -10,6 +10,8 @@ const debug = require('debug')('t-issue:server');
 // Router
 const userRouter = require('./routes/api/user');
 const projectRouter = require('./routes/api/project');
+const commentRouter = require('./routes/api/comment');
+const issueRouter = require('./routes/api/issue');
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.get('/', (req, res) => {
 // Route handlers
 app.use('/api', userRouter);
 app.use('/api', projectRouter);
+app.use('/api', commentRouter);
+app.use('/api', issueRouter);
 
 app.use((req, res, next) => {
   const error = new Error("Not Found");
