@@ -35,12 +35,12 @@ function createUserData() {
   let insertQuery = 'INSERT INTO "user"(first_name, last_name, email, password, role_id) VALUES($1, $2, $3, $4, $5) RETURNING *';
 
   return db.tx(async t => {
-    let customer = await t.any(selectQuery, ['customer']);
+    let contributor = await t.any(selectQuery, ['contributor']);
     let developer = await t.any(selectQuery, ['developer']);
     let projectManager = await t.any(selectQuery, ['project manager']);
     let admin = await t.any(selectQuery, ['admin']);
 
-    let roles = [ customer, developer, projectManager, admin ];
+    let roles = [ contributor, developer, projectManager, admin ];
 
     let results = [];
 

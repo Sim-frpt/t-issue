@@ -67,7 +67,7 @@ function createPriorityData() {
 function createRoleData() {
   db.tx(async t => {
     let a = await t.one('INSERT INTO role(name) VALUES($1) RETURNING name',
-      ['customer']);
+      ['contributor']);
     let b = await t.one('INSERT INTO role(name) VALUES($1) RETURNING name',
       ['developer']);
     let c = await t.one('INSERT INTO role(name) VALUES($1) RETURNING name',
