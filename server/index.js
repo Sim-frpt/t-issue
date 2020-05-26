@@ -7,6 +7,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const debug = require('debug')('t-issue:server');
 
+// Router
+const userRouter = require('./routes/api/user');
+const projectRouter = require('./routes/api/project');
 
 const app = express();
 
@@ -19,6 +22,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.send("Hello from tissue");
 });
+
+// Route handlers
+app.use('/api', userRouter);
+app.use('/api', projectRouter);
 
 app.use((req, res, next) => {
   const error = new Error("Not Found");
