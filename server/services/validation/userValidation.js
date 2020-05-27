@@ -21,9 +21,8 @@ function userValidation() {
     check('email', 'Email must be valid')
     .not().isEmpty()
     .isEmail()
-    .normalizeEmail({ gmail_remove_dots: false })
+    //.normalizeEmail({ gmail_remove_dots: false }) TODO reactivate when done testing
     .custom(async (email) => {
-      debug(email);
       if (await isMailAlreadyInUse(email)) {
         return Promise.reject('Email is already registered');
       }
@@ -44,7 +43,7 @@ function userValidation() {
 async function isMailAlreadyInUse(email) {
   try {
     const user = await User.findByMail(email);
-    debug(user);
+
     if (user !== null) {
       return true;
     }
