@@ -26,10 +26,7 @@ app.get('/', (req, res) => {
 });
 
 // Route handlers
-app.use('/api', userRouter);
-app.use('/api', projectRouter);
-app.use('/api', commentRouter);
-app.use('/api', issueRouter);
+app.use('/api', userRouter, projectRouter, commentRouter, issueRouter);
 
 app.use((req, res, next) => {
   const error = new Error("Not Found");
