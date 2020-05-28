@@ -1,4 +1,3 @@
-// Models
 const User = require.main.require('./db/models/user');
 
 const debug = require('debug')('t-issue:userController');

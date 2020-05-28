@@ -1,16 +1,15 @@
-require('dotenv').config();
 const db = require('../db');
 const debug = require('debug')('t-issue:userModel');
 
-exports.userFactory = function (firstName, lastName, email, password, roleId) {
-  return {
-    first_name: firstName,
-    last_name: lastName,
-    email,
-    password,
-    role_id: roleId
-  };
-};
+//exports.userFactory = function (firstName, lastName, email, password, roleId) {
+  //return {
+    //first_name: firstName,
+    //last_name: lastName,
+    //email,
+    //password,
+    //role_id: roleId
+  //};
+//};
 
 exports.create = async (firstName, lastName, email, password, roleId) => {
   const query = {
