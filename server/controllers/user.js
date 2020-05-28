@@ -57,7 +57,7 @@ exports.create = async (req, res, next) => {
      roleId
     );
 
-    res.json(result);
+    res.status(201).json(result);
   } catch (err) {
     next(err);
   }
@@ -110,6 +110,7 @@ exports.edit = async (req, res, next) => {
   @route PUT /api/users/:id
 */
 exports.update = (req, res, next) => {
+  // TODO
   return res.json('hello from user update');
 };
 
@@ -117,7 +118,22 @@ exports.update = (req, res, next) => {
   @desc Delete User
   @route Delete /api/users/:id
 */
-exports.destroy = (req, res, next) => {
-  return res.json('hello from user destroy');
+exports.destroy = async (req, res, next) => {
+  try {
+    const userToDel = await User.findById(req.params.id);
+
+    if (userToDel == null) {
+      const error = new Error('User not found');
+      error.status = 404;
+
+      return next(error);
+    }
+
+    const deletedUserId = await User.delete(req.params.id);
+
+    res.json(deletedUserId);
+  } catch (err) {
+      next(err);
+  }
 };
 

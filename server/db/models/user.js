@@ -62,7 +62,7 @@ exports.findByMail = async (email) => {
 
 exports.findById = async (id) => {
   const query = {
-    text: 'SELECT first_name, last_name, email, password, r.name as role FROM "user" u INNER JOIN role r on u.role_id = r.role_id WHERE u.role_id = $1',
+    text: 'SELECT first_name, last_name, email, "password", r.name as role FROM "user" u INNER JOIN role r on u.role_id = r.role_id WHERE u.user_id = $1',
     values: [ id ]
   };
 
@@ -75,8 +75,19 @@ exports.findById = async (id) => {
   }
 };
 
-//exports.delete = async (id) => {
+exports.delete = async (id) => {
+  const query = {
+    text: 'DELETE FROM "user" WHERE user_id = $1 RETURNING user_id',
+    values: id
+  }
 
-//}
+  try {
+    const result = await db.one(query);
+
+    return result;
+  } catch (err) {
+    debug('ERROR:', err);
+  }
+};
 
 
