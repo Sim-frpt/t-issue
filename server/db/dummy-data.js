@@ -71,10 +71,11 @@ function createProjectsUsersData() {
 
     let results = [];
     for (let project of projects) {
-      // random number of users to assign to a project
-      let usersNumber = Math.floor(Math.random() * (users.length - 1) + 1);
 
-      for (let i = 0; i < usersNumber; i++) {
+      // random number of users to assign to a project
+      let usersNumber = Math.floor(Math.random() * (users.length));
+
+      for (let i = users.length - 1; i >= usersNumber; i--) {
         let query = await t.one(
           'INSERT INTO projects_users(project_id, user_id) VALUES($1, $2) RETURNING *',
           [project.project_id, users[i].user_id]);
