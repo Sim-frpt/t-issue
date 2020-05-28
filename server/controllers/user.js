@@ -26,7 +26,7 @@ exports.index = async (req, res, next) => {
   @route GET /api/users/new
 */
 exports.new = (req, res, next) => {
-  return res.json('hello from user new');
+  return res.json('Nothing to do on requesting new user form?');
 };
 
 /*
@@ -37,27 +37,24 @@ exports.create = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.json(errors);
+    return res.status(422).json(errors.array());
   }
 
+  let { first_name: firstName, last_name: lastName, email, password, roleId = 1 } = req.body;
+
   try {
-    const password = await bcrypt.hash(req.body.password, saltRounds);
-    req.body.password = password;
+    password = await bcrypt.hash(req.body.password, saltRounds);
   } catch (err) {
     next(err);
   }
 
-  if (!req.body.roleId) {
-    req.body.roleId = 1;
-  }
-
   try {
     const result = await User.create(
-      req.body.first_name,
-      req.body.last_name,
-      req.body.email,
-      req.body.password,
-      req.body.roleId
+     firstName,
+     lastName,
+     email,
+     password,
+     roleId
     );
 
     res.json(result);

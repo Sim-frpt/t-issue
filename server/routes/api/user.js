@@ -1,14 +1,13 @@
 const express = require('express');
-const userController = require('../../controllers/user');
-const userValidation = require('../../services/validation/userValidation');
-
+const userController = require.main.require('./controllers/user');
+const validator = require.main.require('./services/validator');
 const router = express.Router();
 
 router.get('/users', userController.index);
 
 router.get('/users/new', userController.new);
 
-router.post('/users', userValidation(), userController.create);
+router.post('/users', validator.createUser, userController.create);
 
 router.get('/users/:id', userController.show);
 
