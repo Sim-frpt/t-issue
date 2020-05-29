@@ -28,11 +28,6 @@ CREATE TABLE "role" (
   name varchar(20) UNIQUE NOT NULL
 );
 
-CREATE TABLE "project" (
-  project_id serial PRIMARY KEY,
-  name varchar(100) UNIQUE NOT NULL
-);
-
 CREATE TABLE "user" (
   user_id serial PRIMARY KEY,
   first_name varchar(100) NOT NULL,
@@ -40,6 +35,12 @@ CREATE TABLE "user" (
   email varchar(100) NOT NULL,
   password varchar(100),
   role_id INTEGER REFERENCES "role" (role_id)
+);
+
+CREATE TABLE "project" (
+  project_id serial PRIMARY KEY,
+  name varchar(100) UNIQUE NOT NULL,
+  admin_id INTEGER REFERENCES "user" (user_id)
 );
 
 CREATE TABLE "projects_users" (

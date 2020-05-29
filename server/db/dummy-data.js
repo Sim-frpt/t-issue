@@ -14,10 +14,12 @@ function createProjectData() {
   }
 
   return db.tx(async t => {
+    let admins = await t.any('SELECT user_id FROM "user" u INNER JOIN role r ON u.role_id = r.role_id WHERE r.name = \'admin\'');
     let results = [];
 
     for (let name of names) {
-      const query = await t.one('INSERT INTO PROJECT(name) VALUES($1) RETURNING name', name);
+    let randomAdmin = Math.floor(Math.random() * admins.length);
+      const query = await t.one('INSERT INTO PROJECT(name, admin_id) VALUES($1, $2) RETURNING name', [ name, admins[randomAdmin].user_id ]);
 
       results.push(query);
     }
@@ -41,7 +43,6 @@ function createUserData() {
     let admin = await t.any(selectQuery, ['admin']);
 
     let roles = [ contributor, developer, projectManager, admin ];
-
     let results = [];
 
     for (let role of roles) {
@@ -55,6 +56,14 @@ function createUserData() {
 
       results.push(queryResult);
     }
+    // Add another admin, so that I have at leat 2 to choose from to attach a project to
+    let newAdmin = await t.one(insertQuery, [
+      faker.name.firstName(),
+      faker.name.lastName(),
+      faker.internet.email(),
+      faker.internet.password(),
+      admin[0].role_id
+    ]);
 
     return results;
   }).then(data => {
@@ -67,19 +76,28 @@ function createUserData() {
 function createProjectsUsersData() {
   return db.tx(async t => {
     let projects = await t.any('SELECT project_id from project');
-    let users = await t.any('SELECT user_id FROM "user"');
-
+    let users = await t.any('SELECT user_id FROM "user" u INNER JOIN role r ON u.role_id = r.role_id WHERE r.name != \'admin\'');
     let results = [];
+
     for (let project of projects) {
 
       // random number of users to assign to a project
       let usersNumber = Math.floor(Math.random() * (users.length));
+      // array that will track what users have already been assigned to current project
+      let pickedUsers = [];
 
-      for (let i = users.length - 1; i >= usersNumber; i--) {
+      for (let i = 0; i <= usersNumber; i++) {
+        let randomUserIndex = Math.floor(Math.random() * (users.length));
+
+        if (pickedUsers.includes(users[randomUserIndex].user_id)) {
+          continue;
+        }
+
         let query = await t.one(
           'INSERT INTO projects_users(project_id, user_id) VALUES($1, $2) RETURNING *',
-          [project.project_id, users[i].user_id]);
+          [project.project_id, users[randomUserIndex].user_id]);
 
+        pickedUsers.push(users[randomUserIndex].user_id);
         results.push(query);
       }
     }
@@ -169,8 +187,8 @@ function createCommentData() {
     .catch(err => debug(err));
 }
 
-createProjectData()
-  .then(createUserData)
+createUserData()
+  .then(createProjectData)
   .then(createProjectsUsersData)
   .then(createIssueData)
   .then(createCommentData)
