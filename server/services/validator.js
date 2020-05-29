@@ -4,15 +4,15 @@ const User = require.main.require('./db/models/user');
 
 exports.createUser = [
   check('first_name')
-  .isLength({ min: 2, max: 50}).withMessage("Name must be between 2 and 50 characters")
-  .not().isEmpty().withMessage("Name must not be empty")
+  .isLength({ min: 2, max: 50}).withMessage('Name must be between 2 and 50 characters')
+  .not().isEmpty().withMessage('Name must not be empty')
   .bail()
   .customSanitizer(value => value.toLowerCase())
   .escape()
   .trim(),
   check('last_name')
-  .isLength({ min: 2, max: 50}).withMessage("Last name must be between 2 and 50 characters")
-  .not().isEmpty().withMessage("Last name must not be empty")
+  .isLength({ min: 2, max: 50}).withMessage('Last name must be between 2 and 50 characters')
+  .not().isEmpty().withMessage('Last name must not be empty')
   .bail()
   .customSanitizer(value => value.toLowerCase())
   .escape()
@@ -36,6 +36,15 @@ exports.createUser = [
 
     return true;
   })
+];
+
+exports.createProject = [
+  check('name')
+  .isLength({min: 2, max: 100 }).withMessage('Name must be between 2 and 50 characters')
+  .not().isEmpty().withMessage('Name must not be empty')
+  .bail()
+  .escape()
+  .trim()
 ];
 
 async function isMailAlreadyInUse(email) {

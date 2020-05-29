@@ -22,14 +22,22 @@ exports.index = async (req, res, next) => {
   @route GET /api/projects/new
 */
 exports.new = (req, res, next) => {
-  return res.json('hello from project new');
+  return res.json('TODO project new?');
 };
 
 /*
   @desc Create project 
   @route POST /api/projects
 */
-exports.create = (req, res, next) => {
+exports.create = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json(errors.array());
+  }
+
+  const { name } = req.body;
+
   return res.json('hello from project create');
 };
 

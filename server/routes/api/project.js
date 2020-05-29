@@ -1,5 +1,6 @@
 const express = require('express');
-const projectController = require('../../controllers/project');
+const projectController = require.main.require('./controllers/project');
+const validator = require.main.require('./services/validator');
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ router.get('/projects', projectController.index);
 
 router.get('/projects/new', projectController.new);
 
-router.post('/projects', projectController.create);
+router.post('/projects', validator.createProject, projectController.create);
 
 router.get('/projects/:id', projectController.show);
 
