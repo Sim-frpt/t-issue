@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 const debug = require('debug')('t-issue:db-samples');
-const db = require('./db');
+const db = require('../config/db');
 
 function createStatusData() {
   db.tx(async t => {

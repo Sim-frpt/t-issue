@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const faker = require('faker');
 const debug = require('debug')('t-issue:db-dummy');
-const db = require('./db');
+const db = require('../config/db');
 
 function createProjectData() {
   const names = [];
