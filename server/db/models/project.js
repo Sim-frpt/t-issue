@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require.main.require('./config/db');
 const debug = require('debug')('t-issue:projectModel');
 
 exports.findAll = async () => {
