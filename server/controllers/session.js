@@ -38,8 +38,6 @@ exports.create = async (req, res, next) => {
       res.json(req.user);
     });
   })(req, res, next);
-
-  //res.json('hello from create session');
 };
 
 exports.destroy = async (req, res, next) => {

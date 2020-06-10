@@ -46,7 +46,7 @@ exports.findAll = async () => {
 
 exports.findByMail = async (email) => {
   const query = {
-    text: 'SELECT * FROM "user" WHERE email = $1',
+    text: 'SELECT user_id, first_name, last_name, email, "password", r.name as role FROM "user" u INNER JOIN role r on u.role_id = r.role_id WHERE u.email = $1',
     values: [ email ]
   };
 

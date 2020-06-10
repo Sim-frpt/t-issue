@@ -11,7 +11,6 @@ passport.use(new LocalStrategy({
   passwordField: 'password'
 },
   async (username, password, done) => {
-    debug('here');
     try {
       const user = await User.findByMail(username);
 
