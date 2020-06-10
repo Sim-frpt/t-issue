@@ -20,6 +20,9 @@ passport.use(new LocalStrategy({
 
       const isPwdOk = await bcrypt.compare(password, user.password);
 
+      // Check pwd without bcrypt for dummy users
+      //const isPwdOk = password === user.password ? true : false;
+
       if (!isPwdOk) {
         return done(null, false, { message: 'Incorrect pasword.' });
       }

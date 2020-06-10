@@ -1,4 +1,5 @@
 const Project = require.main.require('./db/models/project');
+const User = require.main.require('./db/models/user');
 
 const debug = require('debug')('t-issue:projectController');
 const { validationResult } = require('express-validator');
@@ -26,7 +27,7 @@ exports.new = (req, res, next) => {
 };
 
 /*
-  @desc Create project 
+  @desc Create project
   @route POST /api/projects
 */
 exports.create = async (req, res, next) => {
@@ -36,9 +37,29 @@ exports.create = async (req, res, next) => {
     return res.status(422).json(errors.array());
   }
 
+  if (!req.user) {
+    const error = new Error('Unauthorized');
+    error.status = 401;
+
+    return next(error);
+  }
+
+  if (req.user.role !== 'admin') {
+    const error = new Error('forbidden');
+    error.status = 403;
+
+    return next(error);
+  }
+
   const { name } = req.body;
 
-  return res.json('hello from project create');
+  try {
+    const result = await Project.create(name, req.user.user_id);
+
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 /*
@@ -66,8 +87,38 @@ exports.show = async (req, res, next) => {
   @desc Get project edit form
   @route GET /api/projects/edit
 */
-exports.edit = (req, res, next) => {
-  return res.json('hello from project edit');
+exports.edit = async (req, res, next) => {
+
+  if (!req.user) {
+    const error = new Error('Unauthorized');
+    error.status = 401;
+
+    return next(error);
+  }
+
+  try {
+    const currentProject = await Project.findById(req.params.id);
+
+    // If logged in user is not the admin of the project
+
+    if (req.user.user_id !== currentProject.admin_id) {
+      const error = new Error('Forbidden');
+      error.status = 403;
+
+      next(error);
+    }
+
+    if (currentProject == null) {
+      const error = new Error('Project not found');
+      error.status = 404;
+
+      next(error);
+    }
+
+    return res.json(currentProject);
+  } catch (err) {
+    next(err);
+  }
 };
 
 /*

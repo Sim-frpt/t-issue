@@ -25,9 +25,10 @@ exports.create = async (req, res, next) => {
     }
 
     if (!user) {
-      const error = new Error('User not found');
+      const error = new Error(info.message);
+      error.status = 401;
 
-      return next(err);
+      return next(error);
     }
 
     req.logIn(user, err => {

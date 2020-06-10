@@ -34,13 +34,13 @@ CREATE TABLE "user" (
   last_name varchar(100) NOT NULL,
   email varchar(100) NOT NULL,
   password varchar(100),
-  role_id INTEGER REFERENCES "role" (role_id)
+  role_id INTEGER REFERENCES "role" (role_id) NOT NULL
 );
 
 CREATE TABLE "project" (
   project_id serial PRIMARY KEY,
   name varchar(100) UNIQUE NOT NULL,
-  admin_id INTEGER REFERENCES "user" (user_id)
+  admin_id INTEGER REFERENCES "user" (user_id) NOT NULL
 );
 
 CREATE TABLE "projects_users" (
