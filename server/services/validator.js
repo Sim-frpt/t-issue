@@ -47,6 +47,8 @@ exports.createProject = [
   .trim()
 ];
 
+exports.editProject = exports.createProject;
+
 async function isMailAlreadyInUse(email) {
   try {
     const user = await User.findByMail(email);

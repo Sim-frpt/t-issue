@@ -1,6 +1,8 @@
 const express = require('express');
 const projectController = require.main.require('./controllers/project');
 const validator = require.main.require('./services/validator');
+const authentication = require.main.require('./services/authentication');
+const authorization = require.main.require('./services/authorization');
 
 const router = express.Router();
 
@@ -8,14 +10,14 @@ router.get('/projects', projectController.index);
 
 router.get('/projects/new', projectController.new);
 
-router.post('/projects', validator.createProject, projectController.create);
+router.post('/projects', authentication.checkAuth, authorization.isAdmin, validator.createProject, projectController.create);
 
 router.get('/projects/:id', projectController.show);
 
-router.get('/projects/:id/edit', projectController.edit);
+router.get('/projects/:id/edit',authentication.checkAuth, projectController.edit);
 
-router.put('/projects/:id', projectController.update);
+router.put('/projects/:id', authentication.checkAuth, validator.editProject, projectController.update);
 
-router.delete('/projects/:id', projectController.destroy);
+router.delete('/projects/:id', authentication.checkAuth, projectController.destroy);
 
 module.exports = router;

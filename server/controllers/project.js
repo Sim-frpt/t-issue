@@ -1,8 +1,10 @@
+const { validationResult } = require('express-validator');
+const debug = require('debug')('t-issue:projectController');
+const db = require.main.require('./config/db');
+
+// Models
 const Project = require.main.require('./db/models/project');
 const User = require.main.require('./db/models/user');
-
-const debug = require('debug')('t-issue:projectController');
-const { validationResult } = require('express-validator');
 
 /*
   @desc Get all projects
@@ -35,20 +37,6 @@ exports.create = async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     return res.status(422).json(errors.array());
-  }
-
-  if (!req.user) {
-    const error = new Error('Unauthorized');
-    error.status = 401;
-
-    return next(error);
-  }
-
-  if (req.user.role !== 'admin') {
-    const error = new Error('forbidden');
-    error.status = 403;
-
-    return next(error);
   }
 
   const { name } = req.body;
@@ -88,19 +76,10 @@ exports.show = async (req, res, next) => {
   @route GET /api/projects/edit
 */
 exports.edit = async (req, res, next) => {
-
-  if (!req.user) {
-    const error = new Error('Unauthorized');
-    error.status = 401;
-
-    return next(error);
-  }
-
   try {
     const currentProject = await Project.findById(req.params.id);
 
     // If logged in user is not the admin of the project
-
     if (req.user.user_id !== currentProject.admin_id) {
       const error = new Error('Forbidden');
       error.status = 403;
@@ -125,8 +104,39 @@ exports.edit = async (req, res, next) => {
   @desc Update project
   @route PUT /api/projects/:id
 */
-exports.update = (req, res, next) => {
-  return res.json('hello from project update');
+exports.update = async (req, res, next) => {
+  // If logged in user is not the admin of the project. Project admin is a hidden form input that has to be parsed to become an int
+  if (req.user.user_id !== parseInt(req.body.admin_id)) {
+    const error = new Error('Forbidden');
+    error.status = 403;
+
+    next(error);
+  }
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json(errors.array());
+  }
+
+  const { name } = req.body;
+
+  try {
+    const currentProject = await Project.findById(req.params.id);
+
+    if (currentProject == null) {
+      const error = new Error('Project not found');
+      error.status = 404;
+
+      next(error);
+    }
+
+    const result = await Project.update(req.params.id, name);
+
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 /*

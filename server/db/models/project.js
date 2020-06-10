@@ -46,5 +46,21 @@ exports.findById = async (id) => {
 
     return err.message || err;
   }
-
 };
+
+exports.update = async (id, name) => {
+  const query = {
+    text: 'UPDATE project SET name = $1 WHERE project_id = $2 RETURNING project_id',
+    values: [ name, id ]
+  };
+
+  try {
+    const result = await db.one(query);
+
+    return result;
+  } catch (err) {
+    debug('ERROR:', err);
+
+    return err.message || err;
+  }
+}
