@@ -6,13 +6,15 @@ exports.show = async (req, res, next) => {
   if (!req.user) {
     const error = new Error('No active session');
     error.status = 404;
-    next(error);
+
+    return next(error);
   }
 
   res.json(req.user);
 };
 
 exports.new = async (req, res, next) => {
+  // TODO get for login page
   res.json('hello from new session');
 };
 
@@ -41,5 +43,13 @@ exports.create = async (req, res, next) => {
 };
 
 exports.destroy = async (req, res, next) => {
-  res.json('hello from destroy');
+  if (!req.user) {
+    const error = new Error('No active session');
+    error.status = 404;
+
+    return next(error);
+  }
+
+  req.logout();
+  res.status(200).json('Session destroyed');
 };
