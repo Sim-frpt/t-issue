@@ -88,5 +88,3 @@ exports.delete = async (id) => {
     debug('ERROR:', err);
   }
 };
-
-

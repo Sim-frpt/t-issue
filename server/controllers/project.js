@@ -143,7 +143,29 @@ exports.update = async (req, res, next) => {
   @desc Delete Project
   @route DELETE /api/projects/:id
 */
-exports.destroy = (req, res, next) => {
-  return res.json('hello from project destroy');
+exports.destroy = async (req, res, next) => {
+  try {
+    const projectToDel = await Project.findById(req.params.id);
+
+    if (projectToDel == null) {
+      const error = new Error('Project not found');
+      error.status = 404;
+
+      next(error);
+    }
+
+    if (req.user.user_id !== projectToDel.admin_id) {
+      const error = new Error('Forbidden');
+      error.status = 403;
+
+      next(error);
+    }
+
+    const deletedProjectId = await Project.delete(req.params.id);
+
+    res.json(deletedProjectId);
+  } catch (err) {
+    next(err);
+  }
 };
 
