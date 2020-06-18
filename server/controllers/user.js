@@ -25,6 +25,7 @@ exports.index = async (req, res, next) => {
   @route GET /api/users/new
 */
 exports.new = (req, res, next) => {
+  // TODO user controller for "GET" creation form?
   return res.json('Nothing to do on requesting new user form?');
 };
 

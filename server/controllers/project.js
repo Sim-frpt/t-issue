@@ -4,7 +4,6 @@ const db = require.main.require('./config/db');
 
 // Models
 const Project = require.main.require('./db/models/project');
-const User = require.main.require('./db/models/user');
 
 /*
   @desc Get all projects
