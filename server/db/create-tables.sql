@@ -53,7 +53,7 @@ CREATE TABLE "projects_users" (
 
 CREATE TABLE "issue" (
   issue_id serial PRIMARY KEY,
-  title varchar(200),
+  title varchar(200) NOT NULL,
   description varchar (2000),
   image varchar(200),
   tag_id INTEGER references "tag" (tag_id),

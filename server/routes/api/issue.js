@@ -1,5 +1,6 @@
 const express = require('express');
 const issueController = require('../../controllers/issue');
+const validator = require.main.require('./services/validator');
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ router.get('/issues', issueController.index);
 
 router.get('/issues/new', issueController.new);
 
-router.post('/issues', issueController.create);
+router.post('/issues', validator.createIssue, issueController.create);
 
 router.get('/issues/:id', issueController.show);
 

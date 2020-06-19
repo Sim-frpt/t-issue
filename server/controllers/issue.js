@@ -47,6 +47,12 @@ exports.new = async (req, res, next) => {
   @route POST /api/issues
 */
 exports.create = (req, res, next) => {
+  const errors = validationResult(req);
+  debug(errors);
+  if (!errors.isEmpty()) {
+    return res.status(422).json(errors.array());
+  }
+
   return res.json('hello from issue create');
 };
 

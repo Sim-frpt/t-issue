@@ -14,3 +14,17 @@ exports.findAll = async () => {
     return err.message || err;
   }
 }
+
+exports.getMaxTagId = async () => {
+  const query = 'SELECT tag_id FROM tag ORDER BY tag_id DESC LIMIT 1';
+
+  try {
+    const result = db.one(query);
+
+    return result;
+  } catch (err) {
+    debug('ERROR:', err);
+
+    return err.message || err;
+  }
+}
