@@ -74,6 +74,7 @@ exports.findById = async (id) => {
   }
 };
 
+// Delete throws error if user is the admin of a project, normal behaviour
 exports.delete = async (id) => {
   const query = {
     text: 'DELETE FROM "user" WHERE user_id = $1 RETURNING user_id',

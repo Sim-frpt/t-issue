@@ -7,7 +7,7 @@ exports.show = async (req, res, next) => {
     const error = new Error('No active session');
     error.status = 404;
 
-    return next(error);
+    next(error);
   }
 
   res.json(req.user);

@@ -1,5 +1,5 @@
 const express = require('express');
-const issueController = require('../../controllers/issue');
+const issueController = require.main.require('./controllers/issue');
 const validator = require.main.require('./services/validator');
 
 const router = express.Router();

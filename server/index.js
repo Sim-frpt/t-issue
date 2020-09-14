@@ -32,7 +32,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', (req, res) => {
-  res.send("Hello from tissue");
+  return res.send("Hello from tissue");
 });
 
 // Route handlers
@@ -46,13 +46,18 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  // Delegate to the default Express error handler if we're already streaming the response to the client -> see documentation on error handling
+  if (res.headersSent) {
+    return next(err);
+  }
+
   if (process.env.NODE_ENV = 'development') {
     debug(err.stack);
   }
 
   res.status(err.status || 500);
 
-  res.json({
+  return res.json({
     error: {
       message: err.message
     }
