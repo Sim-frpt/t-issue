@@ -15,11 +15,14 @@ exports.findAll = async () => {
   }
 }
 
-exports.getMaxTagId = async () => {
-  const query = 'SELECT tag_id FROM tag ORDER BY tag_id DESC LIMIT 1';
+exports.findById = async (id) => {
+  const query = {
+    text : 'SELECT * FROM tag WHERE tag.tag_id = $1',
+    values: [ id ]
+  };
 
   try {
-    const result = db.one(query);
+    const result = db.oneOrNone(query);
 
     return result;
   } catch (err) {

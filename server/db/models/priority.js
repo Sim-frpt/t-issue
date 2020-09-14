@@ -14,3 +14,20 @@ exports.findAll = async () => {
     return err.message || err;
   }
 }
+
+exports.findById = async(priorityId) => {
+  const query = {
+    text: 'SELECT * FROM priority WHERE priority_id = $1',
+    values: [ priorityId ]
+  };
+
+  try {
+    const results = db.oneOrNone(query);
+
+    return results;
+  } catch (err) {
+    debug('ERROR:', err);
+
+    return err.message || err
+  }
+}

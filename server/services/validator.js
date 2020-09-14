@@ -2,6 +2,9 @@ const { check, validationResult } = require('express-validator');
 const debug = require('debug')('t-issue:validatorService');
 const User = require.main.require('./db/models/user');
 const Tag = require.main.require('./db/models/tag');
+const Priority = require.main.require('./db/models/priority');
+const Project = require.main.require('./db/models/project');
+const Status = require.main.require('./db/models/status');
 
 exports.createUser = [
   check('first_name')
@@ -23,9 +26,7 @@ exports.createUser = [
   .isEmail()
   //.normalizeEmail({ gmail_remove_dots: false }) TODO reactivate when done testing
   .custom(async (email) => {
-    if (await isMailAlreadyInUse(email)) {
-      return Promise.reject('Email is already registered');
-    }
+     return await isMailAlreadyInUse(email);
   }),
   check('password', 'Password must be at least 8 characters long')
   .isLength({ min: 8, max: 50 }),
@@ -56,26 +57,26 @@ exports.createIssue = [
   check('description')
   .isLength({ max: 1000 }).withMessage('Description must be less than 1000 characters'),
   check('tag_id') // Check that the tag ID is not bigger than the biggest tag id in db
-  .custom( async tagId => {
-    try {
-      const maxId = await Tag.getMaxTagId()
-        .then(data => data.tag_id)
-        .catch(err => err);
-
-      if (tagId > maxId) {
-        return Promise.reject(`tagId cannot be bigger than ${maxId}`);
-      }
-    } catch (err) {
-      debug(err);
-
-      return err;
-    }
+  .custom(async tagId => {
+    return await isIdValid('tag', tagId);
   }),
-  //check('assignee_id'),
+  check('assignee_id')
+  .custom(async assigneeId => {
+    return await isIdValid('assignee', assigneeId);
+  }),
   //check('creator_id'),
-  //check('priority_id'),
-  //check('project_id'),
-  //check('status_id')
+  check('priority_id')
+  .custom(async priorityId => {
+    return await isIdValid('priority', priorityId);
+  }),
+  check('project_id')
+  .custom(async projectId => {
+    return await isIdValid('project', projectId);
+  }),
+  check('status_id')
+  .custom(async statusId => {
+    return await isIdValid('status', statusId);
+  })
 ];
 
 async function isMailAlreadyInUse(email) {
@@ -86,8 +87,42 @@ async function isMailAlreadyInUse(email) {
       return true;
     }
 
-    return false;
+    return Promise.reject('Email is already registered');
   } catch (err) {
     debug(err);
+    return err;
+  }
+}
+
+async function isIdValid(field, fieldId) {
+  try {
+    let validEntry;
+
+    switch(field) {
+      case 'tag':
+        validEntry = await Tag.findById(fieldId);
+        break;
+      case 'assignee':
+        validEntry = await User.findById(fieldId);
+        break;
+      case 'priority':
+        validEntry = await Priority.findById(fieldId);
+        break;
+      case 'project':
+        validEntry = await Project.findById(fieldId);
+        break;
+      case 'status':
+        validEntry = await Status.findById(fieldId);
+        break;
+    }
+
+    if (validEntry !== null) {
+      return true;
+    }
+
+    return Promise.reject(`${field} id is invalid`);
+  } catch (err) {
+    debug(err);
+    return err;
   }
 }
