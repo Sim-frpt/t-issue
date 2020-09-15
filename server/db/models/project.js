@@ -65,6 +65,7 @@ exports.findById = async (id) => {
   }
 };
 
+// TODO maybe delete this, or maybe I'll need it for something else
 exports.insertIntoJoinTable = async (projectId, userId) => {
   const query = {
     text: 'INSERT INTO projects_users(project_id, user_id) VALUES($1, $2)',

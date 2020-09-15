@@ -41,13 +41,9 @@ exports.create = async (req, res, next) => {
   const { name } = req.body;
 
   try {
-    const result = await Project.create(name, req.user.user_id)
-      .then(async data => {
-        debug(data);
-        // After creating the project, also insert the relationship in projects_users table to clarify the admin is a member of the project
-        await Project.insertIntoJoinTable(data.project_id, req.user.user_id);
-        return res.json(data);
-      });
+    const result = await Project.create(name, req.user.user_id);
+
+    return res.json(result);
   } catch (err) {
     next(err);
   }

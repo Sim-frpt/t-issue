@@ -21,6 +21,6 @@ router.put('/projects/:id', authentication.checkAuth, validator.editProject, pro
 
 router.delete('/projects/:id', authentication.checkAuth, projectController.destroy);
 
-router.post('/projects/:id/issues', authentication.checkAuth, authorization.isMemberOfProject, validator.createIssue, issueController.create);
+router.post('/projects/:id/issues', authentication.checkAuth, authorization.isAllowedToCreateIssue, validator.createIssue, issueController.create);
 
 module.exports = router;
