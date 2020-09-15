@@ -1,5 +1,6 @@
 const express = require('express');
 const projectController = require.main.require('./controllers/project');
+const issueController = require.main.require('./controllers/issue');
 const validator = require.main.require('./services/validator');
 const authentication = require.main.require('./services/authentication');
 const authorization = require.main.require('./services/authorization');
@@ -19,5 +20,7 @@ router.get('/projects/:id/edit',authentication.checkAuth, projectController.edit
 router.put('/projects/:id', authentication.checkAuth, validator.editProject, projectController.update);
 
 router.delete('/projects/:id', authentication.checkAuth, projectController.destroy);
+
+router.post('/projects/:id/issues', authentication.checkAuth, authorization.isMemberOfProject, validator.createIssue, issueController.create);
 
 module.exports = router;

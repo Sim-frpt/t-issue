@@ -65,6 +65,23 @@ exports.findById = async (id) => {
   }
 };
 
+exports.insertIntoJoinTable = async (projectId, userId) => {
+  const query = {
+    text: 'INSERT INTO projects_users(project_id, user_id) VALUES($1, $2)',
+    values: [ projectId, userId ]
+  };
+
+  try {
+    const result = await db.one(query);
+
+    return result;
+  } catch (err) {
+    debug('ERROR:', err);
+
+    return err.message || err;
+  }
+}
+
 exports.update = async (id, name) => {
   const query = {
     text: 'UPDATE project SET name = $1 WHERE project_id = $2 RETURNING project_id',

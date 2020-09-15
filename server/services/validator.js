@@ -63,7 +63,8 @@ exports.createIssue = [
   check('assignee_id')
   .custom(async assigneeId => {
     return await isIdValid('assignee', assigneeId);
-  }),
+  })
+  .optional(),
   //check('creator_id'),
   check('priority_id')
   .custom(async priorityId => {

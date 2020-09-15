@@ -1,4 +1,7 @@
+const debug = require('debug')('t-issue:authentication');
+
 exports.checkAuth = (req, res, next) => {
+
   if (req.user) {
     next();
   } else {
