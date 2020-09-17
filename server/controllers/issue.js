@@ -47,6 +47,8 @@ exports.new = async (req, res, next) => {
   @route POST /api/issues
 */
 exports.create = (req, res, next) => {
+  debug(req.file);
+  debug(req.body);
   const errors = validationResult(req);
   debug(errors);
   if (!errors.isEmpty()) {

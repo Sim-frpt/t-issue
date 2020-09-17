@@ -56,7 +56,7 @@ exports.createIssue = [
   .isLength({ min: 2, max: 100 }).withMessage('Title must be between 2 and 100 characters'),
   check('description')
   .isLength({ max: 1000 }).withMessage('Description must be less than 1000 characters'),
-  check('tag_id') // Check that the tag ID is not bigger than the biggest tag id in db
+  check('tag_id')
   .custom(async tagId => {
     return await isIdValid('tag', tagId);
   }),
@@ -65,7 +65,10 @@ exports.createIssue = [
     return await isIdValid('assignee', assigneeId);
   })
   .optional(),
-  //check('creator_id'),
+  check('creator_id')
+  .custom(async (creatorId, { req }) => {
+    return await isIdValid('creator', creatorId, req);
+  }),
   check('priority_id')
   .custom(async priorityId => {
     return await isIdValid('priority', priorityId);
@@ -95,7 +98,7 @@ async function isMailAlreadyInUse(email) {
   }
 }
 
-async function isIdValid(field, fieldId) {
+async function isIdValid(field, fieldId, req) {
   try {
     let validEntry;
 
@@ -105,6 +108,9 @@ async function isIdValid(field, fieldId) {
         break;
       case 'assignee':
         validEntry = await User.findById(fieldId);
+        break;
+      case 'creator':
+        validEntry = parseInt(fieldId) === req.user.user_id ? true : null;
         break;
       case 'priority':
         validEntry = await Priority.findById(fieldId);

@@ -1,3 +1,6 @@
+const multer = require('multer');
+const multerConfig = require.main.require('./config/multer');
+const upload = multer(multerConfig);
 const express = require('express');
 const projectController = require.main.require('./controllers/project');
 const issueController = require.main.require('./controllers/issue');
@@ -21,6 +24,6 @@ router.put('/projects/:id', authentication.checkAuth, validator.editProject, pro
 
 router.delete('/projects/:id', authentication.checkAuth, projectController.destroy);
 
-router.post('/projects/:id/issues', authentication.checkAuth, authorization.isAllowedToCreateIssue, validator.createIssue, issueController.create);
+router.post('/projects/:id/issues', authentication.checkAuth, authorization.isAllowedToCreateIssue, upload.single('image'), validator.createIssue, issueController.create);
 
 module.exports = router;
