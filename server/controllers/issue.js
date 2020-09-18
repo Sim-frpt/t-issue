@@ -46,7 +46,7 @@ exports.new = async (req, res, next) => {
   @desc Create issue
   @route POST /api/issues
 */
-exports.create = (req, res, next) => {
+exports.create = async (req, res, next) => {
   debug(req.file);
   debug(req.body);
   const errors = validationResult(req);
@@ -55,7 +55,28 @@ exports.create = (req, res, next) => {
     return res.status(422).json(errors.array());
   }
 
-  return res.json('hello from issue create');
+  const imageName = req.file.filename ? req.file.filename : 'issue-default.png';
+  const assigneeId = req.file.assignee_id ? parseInt(req.file.assignee_id) : null;
+
+  const issue = {
+    title: req.body.title,
+    description: req.body.description,
+    image: imageName,
+    tagId: parseInt(req.body.tag_id),
+    assigneeId: assigneeId,
+    creatorId: parseInt(req.body.creator_id),
+    priorityId: parseInt(req.body.priority_id),
+    projectId: parseInt(req.body.project_id),
+    statusId: parseInt(req.body.status_id)
+  };
+
+  try {
+    const result = await Issue.create(issue);
+
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 /*

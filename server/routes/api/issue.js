@@ -9,8 +9,6 @@ router.get('/issues', issueController.index);
 
 router.get('/issues/new', issueController.new);
 
-//router.post('/issues', authentication.checkAuth, authorization.isMemberOfProject, validator.createIssue, issueController.create);
-
 router.get('/issues/:id', issueController.show);
 
 router.get('/issues/:id/edit', issueController.edit);
