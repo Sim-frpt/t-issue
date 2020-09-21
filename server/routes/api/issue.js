@@ -15,7 +15,7 @@ router.get('/issues/:id/edit', authentication.checkAuth, issueController.edit);
 
 router.put('/issues/:id', issueController.update);
 
-router.delete('/issues/:id', issueController.destroy);
+router.delete('/issues/:id', authentication.checkAuth, authorization.isAllowedToDeleteIssue, issueController.destroy);
 
 module.exports = router;
 

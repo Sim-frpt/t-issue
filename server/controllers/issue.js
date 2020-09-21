@@ -47,10 +47,8 @@ exports.new = async (req, res, next) => {
   @route POST /api/issues
 */
 exports.create = async (req, res, next) => {
-  debug(req.file);
-  debug(req.body);
   const errors = validationResult(req);
-  debug(errors);
+
   if (!errors.isEmpty()) {
     return res.status(422).json(errors.array());
   }
@@ -140,7 +138,13 @@ exports.update = (req, res, next) => {
   @desc Delete Issue
   @route DELETE /api/issues/:id
 */
-exports.destroy = (req, res, next) => {
-  return res.json('hello from issue destroy');
+exports.destroy = async (req, res, next) => {
+  try {
+    const deletedIssueId = await Issue.delete(req.params.id);
+
+    res.json(deletedIssueId);
+  } catch (err) {
+    next(err);
+  }
 };
 

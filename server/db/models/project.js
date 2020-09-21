@@ -65,6 +65,23 @@ exports.findById = async (id) => {
   }
 };
 
+exports.findByName = async name => {
+  const query = {
+    text: 'SELECT * FROM project WHERE name = $1',
+    values: [ name ]
+  };
+
+  try {
+    const result = await db.one(query);
+
+    return result;
+  } catch (err) {
+    debug('ERROR:', err);
+
+    return err.message || err;
+  }
+};
+
 // TODO maybe delete this, or maybe I'll need it for something else
 exports.insertIntoJoinTable = async (projectId, userId) => {
   const query = {
@@ -98,4 +115,4 @@ exports.update = async (id, name) => {
 
     return err.message || err;
   }
-}
+};

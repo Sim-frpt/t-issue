@@ -48,3 +48,20 @@ exports.findById = async id => {
     return err.message || err;
   }
 };
+
+exports.delete = async id => {
+  const query = {
+    text: 'DELETE FROM issue WHERE issue.issue_id = $1 RETURNING issue.issue_id',
+    values: [ id ]
+  };
+
+  try {
+    const result = await db.one(query);
+
+    return result;
+  } catch (err) {
+    debug('ERROR:', err);
+
+    return err.message || err;
+  }
+}

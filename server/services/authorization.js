@@ -1,4 +1,7 @@
 const debug = require('debug')('t-issue:authorization');
+
+// Models
+const Issue = require.main.require('./db/models/issue');
 const User = require.main.require('./db/models/user');
 const Project = require.main.require('./db/models/project');
 const ProjectUser = require.main.require('./db/models/project-user');
@@ -15,7 +18,7 @@ exports.isAdmin = (req, res, next) => {
   next();
 }
 
-async function isProjectAdmin (projectId, userId) {
+async function isProjectAdmin(projectId, userId) {
     const actualAdmin = await Project
       .findById(projectId)
       .then(result => result.admin_id);
@@ -38,12 +41,13 @@ async function isMemberOfProject(projectId, userId) {
 
 exports.isAllowedToCreateIssue = async (req, res, next) => {
   try {
-    const isAdmin = await isProjectAdmin(req.params.id, req.user.user_id, next);
-    const isMember = await isMemberOfProject(req.params.id, req.user.user_id, next);
+    const isAdmin = await isProjectAdmin(req.params.id, req.user.user_id);
+    const isMember = await isMemberOfProject(req.params.id, req.user.user_id);
 
     if (!isAdmin && !isMember) {
       const error = new Error('forbidden');
       error.status = 403;
+
       return next(error);
     }
 
@@ -53,3 +57,33 @@ exports.isAllowedToCreateIssue = async (req, res, next) => {
   }
 }
 
+exports.isAllowedToDeleteIssue = async (req, res, next) => {
+  try {
+    const currentIssue = await Issue.findById(req.params.id);
+    const relatedProject = await Project.findByName(currentIssue.project);
+
+    if (currentIssue === null) {
+      const error = new Error('Issue not found');
+      error.status = 404;
+
+      return next(error);
+    }
+
+    req.currentIssue = currentIssue;
+
+    const isAdmin = await isProjectAdmin(relatedProject.project_id, req.user.user_id);
+
+    const isIssueCreator = req.user.user_id === currentIssue.creator_id ? true : false;
+
+    if (!isAdmin && !isIssueCreator) {
+      const error = new Error('forbidden');
+      error.status = 403;
+
+      return next(error);
+    }
+
+    next();
+  } catch (err) {
+    return next(err);
+  }
+}
