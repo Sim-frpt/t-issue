@@ -11,7 +11,7 @@ router.get('/issues/new', issueController.new);
 
 router.get('/issues/:id', issueController.show);
 
-router.get('/issues/:id/edit', issueController.edit);
+router.get('/issues/:id/edit', authentication.checkAuth, issueController.edit);
 
 router.put('/issues/:id', issueController.update);
 
