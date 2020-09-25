@@ -6,6 +6,7 @@ const session = require('express-session');
 const passport = require('./config/passport');
 const path = require('path');
 const debug = require('debug')('t-issue:server');
+const cors = require('cors');
 
 // Router
 const userRouter = require('./routes/api/user');
@@ -30,6 +31,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
+
+// Send a No content status for favicon request cause the browser keeps asking for it and it throws a 404 status
+app.use((req, res, next) => {
+  if (req.originalUrl.includes('favicon.ico')) {
+    return res.status(204).end();
+  }
+  next();
+});
 
 app.get('/', (req, res) => {
   return res.send("Hello from tissue");
