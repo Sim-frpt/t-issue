@@ -1,7 +1,6 @@
 import React from 'react';
-
-// Styles
-import { Container, Box, Typography, TextField } from '@material-ui/core';
+import { Container, Box, Typography } from '@material-ui/core';
+import SignInForm from './SignInForm';
 
 export default function SignIn() {
   return (
@@ -32,40 +31,8 @@ export default function SignIn() {
           </Typography>
         </Box>
       </Container>
-      <Container>
-        <Box
-          mx="auto"
-          py={2}
-          align="center"
-          border={1}
-          width="75%"
-          boxShadow={1}
-        >
-          <form>
-            <Box
-              p={1}
-              textAlign="center"
-            >
-              <TextField
-                id="standard-basic"
-                label="mail"
-                type="text"
-              >
-              </TextField>
-            </Box>
-
-            <Box
-              p={1}
-            >
-              <TextField
-                id="standard-basic"
-                label="password"
-                type="text"
-              >
-              </TextField>
-            </Box>
-          </form>
-        </Box>
+      <Container maxWidth="xs">
+        <SignInForm/>
       </Container>
     </>
   );
