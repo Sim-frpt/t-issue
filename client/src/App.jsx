@@ -1,13 +1,16 @@
 import React from 'react';
 import axios from 'axios';
-import Button from '@material-ui/core/Button';
-import Login from './components/login';
+import SignIn from './components/SignIn';
+import NavBar from './components/Common/NavBar';
 
 function App() {
   return (
-    <div className="App">
-      <Login/>
-    </div>
+    <>
+      <NavBar/>
+      <div className="App">
+        <SignIn/>
+      </div>
+    </>
   );
 }
 
