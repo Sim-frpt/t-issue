@@ -20,6 +20,7 @@ exports.new = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
+
     if (err) {
       return next(err);
     }

@@ -15,7 +15,7 @@ passport.use(new LocalStrategy({
       const user = await User.findByMail(username);
 
       if (!user) {
-        return done(null, false, { message: 'Incorrect email.' });
+        return done(null, false, { message: 'Email is incorrect.' });
       }
 
       const isPwdOk = await bcrypt.compare(password, user.password);
@@ -24,7 +24,7 @@ passport.use(new LocalStrategy({
       //const isPwdOk = password === user.password ? true : false;
 
       if (!isPwdOk) {
-        return done(null, false, { message: 'Incorrect pasword.' });
+        return done(null, false, { message: 'Password is incorrect.' });
       }
 
       return done(null, user);

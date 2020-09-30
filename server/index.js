@@ -33,7 +33,8 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors({
-  origin: 'http://localhost:3000'
+  origin: 'http://localhost:3000',
+  credentials: true
 }));
 
 // Send a No content status for favicon request cause the browser keeps asking for it and it throws a 404 status
