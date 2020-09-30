@@ -1,51 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { TextField, Button, Box } from '@material-ui/core';
+import { TextField, Button, Box, Typography} from '@material-ui/core';
+import { signIn } from 'api/SessionApi';
 
 export default function SignInForm() {
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors, reset } = useForm();
+  const [ error, setError ] = useState(null);
 
-  const onSubmit = data => console.log(data);
+  const onSubmit = async data => {
+    try {
+      await signIn(data)
+        .then((result) => {
+          console.log(result);
+          setError(null);
+          reset();
+        });
+    } catch (err) {
+      setError(err.response.data.error.message);
+      reset({'password': null});
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        variant="outlined"
-        margin="normal"
-        inputRef={register({minLength: 5})}
-        required
-        fullWidth
-        type="text"
-        id="email"
-        label="Email Address"
-        name="email"
-        //error={ errors.email ? true : undefined }
-        //helperText={ errors.email ? errors.email : undefined }
-      />
-      <TextField
-        variant="outlined"
-        margin="normal"
-        required
-        inputRef={register}
-        fullWidth
-        id="password"
-        label="password"
-        type="password"
-        name="password"
-        //error={ errors.password ? true : undefined }
-        //helperText={ errors.password ? errors.password : undefined }
-      />
-      <Box mt={2}>
-        <Button
-          type="submit"
-          variant="contained"
+    <>
+      {error ? <Typography variant="subtitle1" color="error" >{error}</Typography> : '' }
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TextField
+          variant="outlined"
+          margin="normal"
+          inputRef={register({ required: true })}
           fullWidth
-          size="large"
-          color="primary"
-        >
-          Sign In
-        </Button>
-      </Box>
-    </form>
+          type="text"
+          id="email"
+          label="Email Address"
+          name="email"
+          error={ errors.email ? true : undefined }
+          helperText={ errors.email ? errors.email.message : undefined }
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          inputRef={register({ required: true })}
+          fullWidth
+          id="password"
+          label="password"
+          type="password"
+          name="password"
+          error={ errors.password ? true : undefined }
+          helperText={ errors.password ? errors.password.message : undefined }
+        />
+        <Box mt={2}>
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            size="large"
+            color="primary"
+          >
+            Sign In
+          </Button>
+        </Box>
+      </form>
+    </>
   );
 }
