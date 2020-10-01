@@ -1,6 +1,7 @@
 import axios from 'axios';
+const apiUrl = process.env.REACT_APP_API_URL;
 
-export async function signIn(data) {
+export function signIn(data) {
   const { email, password } = data;
 
   return axios({
@@ -11,5 +12,12 @@ export async function signIn(data) {
       email,
       password
     }
+  });
+}
+
+export function checkAuth() {
+  return axios({
+    url: apiUrl + 'sessions',
+    withCredentials: true
   });
 }

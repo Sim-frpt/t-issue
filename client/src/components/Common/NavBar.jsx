@@ -17,19 +17,17 @@ export default function NavBar() {
   const classes = useStyles();
 
   return (
-    <div>
-      <AppBar className={classes.appBar} position="static" color="primary">
-        <Toolbar>
-          <IconButton>
-            <SvgIcon className={classes.icon}>
-              <Logo/>
-            </SvgIcon>
-          </IconButton>
-          <Typography variant="h6" color="textSecondary">
-              T-Issue
-            </Typography>
-        </Toolbar>
+    <AppBar className={classes.appBar} position="static" color="primary">
+      <Toolbar>
+        <IconButton>
+          <SvgIcon className={classes.icon}>
+            <Logo/>
+          </SvgIcon>
+        </IconButton>
+        <Typography variant="h6" color="textSecondary">
+          T-Issue
+        </Typography>
+      </Toolbar>
     </AppBar>
-    </div>
   );
 }
