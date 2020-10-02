@@ -1,10 +1,10 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-export default function Homepage() {
+export default function Dashboard() {
   return(
     <Typography>
-      Homepage
+      Dashboard
     </Typography>
   );
 }

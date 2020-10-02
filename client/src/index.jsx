@@ -5,12 +5,15 @@ import { CssBaseline } from '@material-ui/core';
 import theme from './assets/styles/Theme';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { AuthProvider } from 'AuthContext';
 
 ReactDOM.render(
   <React.StrictMode>
     <CssBaseline>
       <ThemeProvider theme={theme}>
-        <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
       </ThemeProvider>
     </CssBaseline>
   </React.StrictMode>,

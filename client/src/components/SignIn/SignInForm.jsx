@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button, Box, Typography} from '@material-ui/core';
 import { signIn } from 'api/SessionApi';
+import { AuthContext } from 'AuthContext';
 
 export default function SignInForm() {
   const { register, handleSubmit, errors, reset } = useForm();
   const [ error, setError ] = useState(null);
+  const [ auth, setAuth ] = useContext(AuthContext);
 
   const onSubmit = async data => {
     try {
       await signIn(data)
         .then((result) => {
-          console.log(result);
+          setAuth(prevState => {
+            return {
+              ...prevState,
+              authenticated: true,
+              user: result.data
+            };
+          });
           setError(null);
           reset();
         });
     } catch (err) {
       setError(err.response.data.error.message);
-      reset({'password': null});
+      reset({'email': data.email});
     }
   }
 

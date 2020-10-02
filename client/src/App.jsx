@@ -1,54 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import SignIn from './components/SignIn';
 import NavBar from './components/Common/NavBar';
-import Spinner  from './components/Common/Spinner';
-import { checkAuth } from './api/SessionApi'
+import Dashboard from './components/Dashboard';
+import { AuthContext } from 'AuthContext';
 
 function App() {
-  const [ user, setUser ] = useState();
-  const [ authenticated, setAuthenticated ] = useState(false);
-  const [ isLoading, setIsLoading ] = useState(false);
-
-  useEffect( () => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const result = await checkAuth();
-
-        console.log(result);
-        await new Promise(r => setTimeout(r, 4000));
-        return result;
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const [ auth, setAuth ] = useContext(AuthContext);
 
   return (
     <>
       <NavBar/>
-      <div className="App">
-        {isLoading ? (
-          <Spinner/>
-        ): (
-          <SignIn/>
-        )}
-      </div>
+      <Router>
+        <Switch>
+          <Route exact path="/sign-in" component={SignIn}/>
+          <Route exact path="/dashboard" component={Dashboard}/>
+          <Route exact path="/">
+            { console.log(auth.authenticated), auth.authenticated ? <Redirect to="/dashboard" /> : <Redirect to="/sign-in" />}
+          </Route>
+        </Switch>
+        {/*<div className="App">*/}
+          {/*{isLoading ? (*/}
+            {/*<Spinner/>*/}
+          {/*): (*/}
+            {/*<SignIn/>*/}
+          {/*)}*/}
+        {/*</div>*/}
+      </Router>
     </>
   );
-}
-
-const hitHomepage = () => {
-  axios.get('http://localhost:3333/')
-    .then((response) => {
-      console.log(response);
-    })
-    .catch(err => console.log(err));
 }
 
 export default App;
