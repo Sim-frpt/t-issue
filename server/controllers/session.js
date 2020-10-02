@@ -5,7 +5,7 @@ exports.show = async (req, res, next) => {
 
   if (!req.user) {
     const error = new Error('No active session');
-    error.status = 404;
+    error.status = 401;
 
     next(error);
   }
