@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Container, Box, Typography } from '@material-ui/core';
 import SignInForm from './SignInForm';
+import { AuthContext } from 'AuthContext';
+import { Redirect } from 'react-router-dom';
 
 export default function SignIn() {
+
+  const [ auth ] = useContext(AuthContext);
+
+  if (auth.authenticated) {
+    return <Redirect to="/"/>;
+  }
+
   return (
     <>
       <Container>
@@ -15,7 +24,7 @@ export default function SignIn() {
           borderRight={0}
           borderLeft={0}
           borderColor="secondary.main"
-        > 
+        >
           <Typography
             variant="h1"
             color="primary"

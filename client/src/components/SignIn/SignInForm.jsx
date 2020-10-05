@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button, Box, Typography} from '@material-ui/core';
 import { signIn } from 'api/SessionApi';
@@ -7,7 +7,8 @@ import { AuthContext } from 'AuthContext';
 export default function SignInForm() {
   const { register, handleSubmit, errors, reset } = useForm();
   const [ error, setError ] = useState(null);
-  const [ auth, setAuth ] = useContext(AuthContext);
+  const [, setAuth ] = useContext(AuthContext);
+  const emailRef = useRef();
 
   const onSubmit = async data => {
     try {
@@ -19,24 +20,31 @@ export default function SignInForm() {
               authenticated: true,
               user: result.data
             };
-          });
-          setError(null);
+          })
+
           reset();
         });
     } catch (err) {
       setError(err.response.data.error.message);
       reset({'email': data.email});
+      emailRef.current.focus();
     }
   }
 
   return (
     <>
-      {error ? <Typography variant="subtitle1" color="error" >{error}</Typography> : '' }
+      {error
+        ? <Typography variant="subtitle1" color="error" >{error}</Typography>
+        : ''
+      }
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           variant="outlined"
           margin="normal"
-          inputRef={register({ required: true })}
+          inputRef={(e) => {
+            register(e, { required: true });
+            emailRef.current = e
+          }}
           fullWidth
           type="text"
           id="email"
