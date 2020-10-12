@@ -3,6 +3,7 @@ import { Container, Box, Typography } from '@material-ui/core';
 import SignInForm from './SignInForm';
 import { AuthContext } from 'AuthContext';
 import { Redirect } from 'react-router-dom';
+import HeroTitle from 'components/Common/HeroTitle';
 
 export default function SignIn() {
 
@@ -25,13 +26,9 @@ export default function SignIn() {
           borderLeft={0}
           borderColor="secondary.main"
         >
-          <Typography
-            variant="h1"
-            color="primary"
-            gutterBottom
-          >
-            Sign In
-          </Typography>
+          <HeroTitle
+            title="Sign In"
+          />
           <Typography
             variant="subtitle1"
             color="textSecondary"
