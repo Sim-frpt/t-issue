@@ -1,15 +1,27 @@
-import React, { useContext } from 'react';
-import { AppBar, Container, IconButton, SvgIcon, Toolbar, Typography } from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import {
+  AppBar,
+  Container,
+  IconButton,
+  Menu,
+  MenuItem,
+  SvgIcon,
+  Toolbar,
+  Typography,
+  useMediaQuery
+} from '@material-ui/core';
 import { ReactComponent as Logo } from 'assets/images/t-issue.svg';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { AuthContext } from 'AuthContext';
 import { NavLink } from 'react-router-dom';
 import Link from 'components/Common/Link';
+import MenuIcon from '@material-ui/icons/Menu';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
     backgroundColor: theme.palette.primary.light,
-    padding: theme.spacing(2),
+    //padding: theme.spacing(2),
     position: 'fixed',
     zIndex: theme.zIndex.drawer + 1, // Necessary to appear in front of the sidebar
   },
@@ -22,22 +34,42 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   logoContainer: {
-    flexGrow: 2
+    flexShrink: 2,
+    [theme.breakpoints.down('xs')]: {
+      flexShrink: 1
+    }
   },
   navLinksContainer: {
     justifyContent: 'flex-end',
-    margin: 'auto',
+    flexGrow: 1,
+    [theme.breakpoints.down('xs')]: {
+      flexShrink: 2
+    }
   },
 }));
 
-export default function NavBar() {
+function NavBar(props) {
+  const theme = useTheme();
   const classes = useStyles();
+  const { history } = props;
   const [ auth ] = useContext(AuthContext);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = anchorEl ? true : false;
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClick = (pageURL) => {
+    history.push(pageURL);
+    setAnchorEl(null);
+  };
 
   return (
     <AppBar className={classes.appBar} color="primary">
       <Toolbar>
-        <Container className={classes.container}>
+        <Container className={`${classes.container} ${classes.logoContainer}`}>
           <NavLink to="/">
             <IconButton>
               <SvgIcon className={classes.icon}>
@@ -50,29 +82,77 @@ export default function NavBar() {
           </Typography>
         </Container>
         <Container className={`${classes.container} ${classes.navLinksContainer}`}>
-          <Link
-            name="Dashboard"
-            destination="/dashboard"
-          />
-          { auth.authenticated
-            ? <Link
-              name="Sign Out"
-              destination="/sign-out"
-            />
-            :
+          {isMobile ?
             <>
-              <Link
-                name="Sign In"
-                destination="/sign-in"
-              />
-              <Link
-                name="Register"
-                destination="/register"
-              />
+              <IconButton
+                edge="start"
+                //className={classes.menuButton}
+                color="inherit"
+                aria-label="menu"
+                onClick={handleMenu}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right"
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right"
+                }}
+                open={open}
+                onClose={() => setAnchorEl(null)}
+              >
+                <MenuItem onClick={() => handleMenuClick('/dashboard')}>Dashboard</MenuItem>
+                <MenuItem></MenuItem>
+                <MenuItem></MenuItem>
+              </Menu>
             </>
+            :
+              getNavLinks(auth.authenticated)
           }
         </Container>
       </Toolbar>
     </AppBar>
   );
 }
+
+function getNavLinks(isAuthenticated) {
+  const dashboardLink = <Link
+    name="Dashboard"
+    destination="/dashboard"
+  />;
+
+  return (
+    <>
+      {dashboardLink}
+      {isAuthenticated
+        ?
+          <>
+            <Link
+              name="Sign Out"
+              destination="/sign-out"
+            />
+          </>
+          :
+          <>
+            <Link
+              name="Sign In"
+              destination="/sign-in"
+            />
+            <Link
+              name="Register"
+              destination="/register"
+            />
+          </>
+      }
+    </>
+  )
+}
+
+export default withRouter(NavBar);

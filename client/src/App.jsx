@@ -22,13 +22,13 @@ function App() {
         <NavBar/>
         {/* This div is necessary for the navbar to be fixed and not cover up the content below */}
         <div className={classes.offset}/>
-          <Switch>
+        <Switch>
           <Route exact path="/sign-in" component={SignIn}/>
           <PrivateRoute exact path="/dashboard" component={Dashboard}/>
-            <Route exact path="/">
+          <Route exact path="/">
             <Redirect to="/dashboard"/>
-            </Route>
-          </Switch>
+          </Route>
+        </Switch>
       </Router>
     </>
   );
