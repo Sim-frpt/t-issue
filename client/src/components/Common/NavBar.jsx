@@ -21,7 +21,6 @@ import { withRouter } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   appBar: {
     backgroundColor: theme.palette.primary.light,
-    //padding: theme.spacing(2),
     position: 'fixed',
     zIndex: theme.zIndex.drawer + 1, // Necessary to appear in front of the sidebar
   },
@@ -53,7 +52,7 @@ function NavBar(props) {
   const classes = useStyles();
   const { history } = props;
   const [ auth ] = useContext(AuthContext);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [ anchorEl, setAnchorEl ] = useState(null);
   const open = anchorEl ? true : false;
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
 
@@ -108,9 +107,7 @@ function NavBar(props) {
                 open={open}
                 onClose={() => setAnchorEl(null)}
               >
-                <MenuItem onClick={() => handleMenuClick('/dashboard')}>Dashboard</MenuItem>
-                <MenuItem></MenuItem>
-                <MenuItem></MenuItem>
+                {getMenuItems(auth.authenticated, handleMenuClick)}
               </Menu>
             </>
             :
@@ -153,6 +150,42 @@ function getNavLinks(isAuthenticated) {
       }
     </>
   )
+}
+
+function getMenuItems(isAuthenticated, handleMenuClick) {
+  const dashboardItem =
+    <MenuItem
+      onClick={() => handleMenuClick('/dashboard')}
+    >
+      Dashboard
+    </MenuItem>;
+
+  return(
+    <div>
+      {dashboardItem}
+      {isAuthenticated
+        ?
+          <MenuItem
+            onClick={() => handleMenuClick('/sign-out')}
+          >
+            Sign Out
+          </MenuItem>
+          :
+          <>
+            <MenuItem
+              onClick={() => handleMenuClick('/sign-in')}
+            >
+              Sign In
+            </MenuItem>
+            <MenuItem
+              onClick={() => handleMenuClick('/register')}
+            >
+              Register
+            </MenuItem>
+          </>
+      }
+    </div>
+  );
 }
 
 export default withRouter(NavBar);
