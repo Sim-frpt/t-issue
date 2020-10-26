@@ -71,7 +71,7 @@ exports.show = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
 
-    if (user == null) {
+    if (user === null) {
       const error = new Error('User not found');
       error.status = 404;
 
@@ -136,4 +136,22 @@ exports.destroy = async (req, res, next) => {
       next(err);
   }
 };
+
+exports.projectIndex = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user === null) {
+      const error = new Error('User not found');
+      error.status = 404;
+      next(error);
+    }
+
+    const userProjects = await User.getUserProjects(req.params.id);
+
+    res.json(userProjects);
+  } catch (err) {
+    next(err);
+  }
+}
 
