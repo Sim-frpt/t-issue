@@ -19,13 +19,17 @@ const useStyles = makeStyles((theme) => ({
   drawer: {
     [theme.breakpoints.up('sm')]: {
       width: drawerWidth,
+      flexShrink: 0
     },
   },
   iconContainer: {
-    textAlign: 'center'
+    textAlign: 'center',
+    padding: theme.spacing(3)
   },
   menuButton: {
     marginRight: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    padding: 0,
     [theme.breakpoints.up('sm')]: {
       display: 'none',
     },

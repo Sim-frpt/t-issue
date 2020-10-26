@@ -4,8 +4,8 @@ import FullPageSpinner from 'components/Common/FullPageSpinner';
 import { getProjects } from 'api/projectApi';
 import { getIssues } from 'api/issueApi';
 
-export default function Summary() {
-  const [ UserProjects, setUserProjects ] = useState();
+export default function Overview(props) {
+  const [ userProjects, setUserProjects ] = useState();
   const [ issues, setIssues ] = useState();
   const [ isLoading, setIsLoading ] = useState(false);
 
@@ -13,7 +13,7 @@ export default function Summary() {
     const fetchData = async () => {
       setIsLoading(true);
 
-      const result = await getUserProjects();
+      const result = await getProjects();
       setUserProjects(result.data);
       setIsLoading(false);
     };
@@ -34,7 +34,8 @@ export default function Summary() {
   }, []);
 
   useEffect(() => {
-    console.log(issues, userProjects);
+    console.log(props.auth);
+    //console.log(issues, userProjects);
   });
 
   return (
