@@ -24,7 +24,7 @@ function App() {
         <div className={classes.offset}/>
         <Switch>
           <Route exact path="/sign-in" component={SignIn}/>
-          <PrivateRoute exact path="/dashboard" component={Dashboard}/>
+          <PrivateRoute path="/dashboard" component={Dashboard}/>
           <Route exact path="/">
             <Redirect to="/dashboard"/>
           </Route>

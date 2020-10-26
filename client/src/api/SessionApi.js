@@ -7,7 +7,7 @@ export function signIn(data) {
 
   return axios({
     method: 'post',
-    url: 'http://localhost:3333/api/sessions',
+    url: apiUrl + 'sessions',
     withCredentials: true,
     data: {
       email,

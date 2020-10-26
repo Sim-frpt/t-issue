@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Link as MuiLink } from '@material-ui/core';
+import { NavLink as RouterNavLink } from 'react-router-dom';
+import { Link } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -9,14 +9,14 @@ const useStyles = makeStyles({
   }
 });
 
-export default function Link(props) {
+export default function NavLink(props) {
   const theme = useTheme();
   const classes = useStyles();
 
   return (
-    <MuiLink
+    <Link
       className={classes.link}
-      component={NavLink}
+      component={RouterNavLink}
       to={props.destination}
       color="textSecondary"
       underline="hover"
@@ -26,7 +26,7 @@ export default function Link(props) {
       }}
     >
       {props.name}
-    </MuiLink>
+    </Link>
   );
 
 }

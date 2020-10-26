@@ -13,8 +13,8 @@ import {
 import { ReactComponent as Logo } from 'assets/images/t-issue.svg';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { AuthContext } from 'AuthContext';
-import { NavLink } from 'react-router-dom';
-import Link from 'components/Common/Link';
+import { NavLink as RouterNavLink } from 'react-router-dom';
+import NavLink from 'components/Common/NavLink';
 import MenuIcon from '@material-ui/icons/Menu';
 import { withRouter } from 'react-router-dom';
 
@@ -69,13 +69,13 @@ function NavBar(props) {
     <AppBar className={classes.appBar} color="primary">
       <Toolbar>
         <Container className={`${classes.container} ${classes.logoContainer}`}>
-          <NavLink to="/">
+          <RouterNavLink to="/">
             <IconButton>
               <SvgIcon className={classes.icon}>
                 <Logo/>
               </SvgIcon>
             </IconButton>
-          </NavLink>
+          </RouterNavLink>
           <Typography className={classes.title} variant="h6" color="textSecondary">
             T-Issue
           </Typography>
@@ -111,7 +111,7 @@ function NavBar(props) {
               </Menu>
             </>
             :
-              getNavLinks(auth.authenticated)
+              getNavLinks(auth)
           }
         </Container>
       </Toolbar>
@@ -119,8 +119,8 @@ function NavBar(props) {
   );
 }
 
-function getNavLinks(isAuthenticated) {
-  const dashboardLink = <Link
+function getNavLinks(auth) {
+  const dashboardLink = <NavLink
     name="Dashboard"
     destination="/dashboard"
   />;
@@ -128,21 +128,21 @@ function getNavLinks(isAuthenticated) {
   return (
     <>
       {dashboardLink}
-      {isAuthenticated
+      {auth.authenticated
         ?
           <>
-            <Link
+            <NavLink
               name="Sign Out"
               destination="/sign-out"
             />
           </>
           :
           <>
-            <Link
+            <NavLink
               name="Sign In"
               destination="/sign-in"
             />
-            <Link
+            <NavLink
               name="Register"
               destination="/register"
             />

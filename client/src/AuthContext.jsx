@@ -19,6 +19,7 @@ export function AuthProvider(props) {
         });
 
         const result = await checkAuth();
+        result.data.full_name = `${result.data.first_name} ${result.data.last_name}`
 
         setState(prevState => {
           return {
