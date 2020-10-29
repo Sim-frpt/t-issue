@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { Typography, Grid } from '@material-ui/core';
 import Sidebar from './Sidebar';
 import Projects from './Projects';
 import Overview from './Overview';
@@ -42,9 +41,6 @@ export default function Dashboard() {
               )}
             />
           </Switch>
-          <Typography>
-            Dashboard
-          </Typography>
         </div>
       </div>
     </>

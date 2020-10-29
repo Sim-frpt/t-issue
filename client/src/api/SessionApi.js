@@ -7,7 +7,7 @@ export function signIn(data) {
 
   return axios({
     method: 'post',
-    url: apiUrl + 'sessions',
+    url: `${apiUrl}/sessions`,
     withCredentials: true,
     data: {
       email,
@@ -18,7 +18,7 @@ export function signIn(data) {
 
 export function checkAuth() {
   return axios({
-    url: apiUrl + 'sessions',
+    url: `${apiUrl}/sessions`,
     withCredentials: true
   });
 }
