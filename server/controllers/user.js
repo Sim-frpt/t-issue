@@ -1,4 +1,5 @@
 const User = require.main.require('./db/models/user');
+const Project = require.main.require('./db/models/project');
 
 const debug = require('debug')('t-issue:userController');
 const { validationResult } = require('express-validator');
@@ -147,7 +148,15 @@ exports.projectIndex = async (req, res, next) => {
       next(error);
     }
 
-    const userProjects = await User.getUserProjects(req.params.id);
+    // We query for projects the user is part of if he is not admin. If he is we query projects based on the admin id
+    let userProjects;
+
+    if (user.role === 'admin') {
+      userProjects = await Project.findByAdmin(user.user_id);
+    } else {
+      userProjects = await User.getUserProjects(req.params.id);
+    }
+
 
     res.json(userProjects);
   } catch (err) {

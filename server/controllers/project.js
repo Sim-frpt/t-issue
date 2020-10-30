@@ -61,7 +61,7 @@ exports.show = async (req, res, next) => {
       const error = new Error('Project not found');
       error.status = 404;
 
-      next(error);
+      return next(error);
     }
 
     return res.json(project);
