@@ -15,7 +15,7 @@ const User = require.main.require('./db/models/user');
 */
 exports.index = async (req, res, next) => {
   try {
-    const results = await Issue.findAll();
+    const results = await Issue.findAll(req.query);
 
     return res.json(results);
   } catch (err) {
