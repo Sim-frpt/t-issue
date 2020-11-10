@@ -14,8 +14,22 @@ const User = require.main.require('./db/models/user');
   @route GET /api/issues
 */
 exports.index = async (req, res, next) => {
+
+  const validParams = {
+    'title': null,
+    'tag_id': null,
+    'assignee_id': null,
+    'creator_id': null,
+    'priority_id': null,
+    'project_id': null,
+    'priority_id':  null,
+    'status_id': null
+  };
+
+  const params = Object.assign(validParams, req.query);
+
   try {
-    const results = await Issue.findAll(req.query);
+    const results = await Issue.findAll(params);
 
     return res.json(results);
   } catch (err) {

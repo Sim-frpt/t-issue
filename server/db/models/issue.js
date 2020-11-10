@@ -18,11 +18,14 @@ exports.create = async issue => {
   }
   };
 
-exports.findAll = async () => {
-  const query = 'SELECT i.issue_id, i.title, i.description, i.image, t.name, u.first_name || \' \' || u.last_name as assignee, c.first_name || \' \' || c.last_name as creator, prio.name as priority, proj.name as project, s.name as status, created FROM issue i INNER JOIN tag t ON i.tag_id = t.tag_id INNER JOIN "user" u ON i.assignee_id = u.user_id INNER JOIN "user" c ON i.creator_id = c.user_id INNER JOIN priority prio ON i.priority_id = prio.priority_id INNER JOIN project proj ON i.project_id = proj.project_id INNER JOIN status s ON i.status_id = s.status_id';
+exports.findAll = async (params) => {
+  // Adding wildcard characters to the title query param
+  params.title = `%${params.title}%`;
+
+  const query = 'SELECT i.issue_id, i.title, i.description, i.image, t.name, u.first_name || \' \' || u.last_name as assignee, c.first_name || \' \' || c.last_name as creator, prio.name as priority, proj.name as project, s.name as status, created FROM issue i INNER JOIN tag t ON i.tag_id = t.tag_id INNER JOIN "user" u ON i.assignee_id = u.user_id INNER JOIN "user" c ON i.creator_id = c.user_id INNER JOIN priority prio ON i.priority_id = prio.priority_id INNER JOIN project proj ON i.project_id = proj.project_id INNER JOIN status s ON i.status_id = s.status_id WHERE (${project_id} IS NULL OR i.project_id = ${project_id}) AND (${title} IS NULL OR i.title LIKE ${title}) AND (${tag_id} IS NULL OR i.tag_id = ${tag_id}) AND (${assignee_id} IS NULL OR i.assignee_id = ${assignee_id}) AND (${creator_id} IS NULL OR i.creator_id = ${creator_id}) AND (${priority_id} IS NULL OR i.priority_id = ${priority_id}) AND (${status_id} IS NULL OR i.status_id = ${status_id});';
 
   try {
-    const results = db.any(query);
+    const results = db.any(query, params);
 
     return results;
   } catch (err) {
