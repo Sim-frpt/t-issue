@@ -13,7 +13,7 @@ import {
 } from'@material-ui/core';
 
 // Api calls
-//import { getIssues } from 'api/issueApi';
+import { getIssues } from 'api/issueApi';
 import { getUserProjects } from 'api/userApi';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +30,7 @@ export default function Overview(props) {
   const classes = useStyles();
   const [ userProjects, setUserProjects ] = useState([]);
   const [ selectedProject, setSelectedProject ] = useState('');
-  //const [ issues, setIssues ] = useState([]);
+  const [ issues, setIssues ] = useState([]);
   const [ isLoading, setIsLoading ] = useState(false);
   const user = props.auth.user;
 
@@ -55,17 +55,31 @@ export default function Overview(props) {
     setSelectedProject(userProjects[0].project_id);
   }, [ userProjects ]);
 
-  //useEffect(() => {
-    //const fetchData = async () => {
-      //setIsLoading(true);
+  // Get issues based on selected project
+  useEffect(() => {
+    if (!selectedProject) {
+      return;
+    }
 
-      //const result = await getIssues();
-      //setIssues(result.data);
-      //setIsLoading(false);
-    //};
+    const fetchData = async () => {
+      setIsLoading(true);
 
-    //fetchData();
-  //}, []);
+      const params = {
+        project_id: selectedProject
+      };
+
+      const result = await getIssues(params);
+      console.log(result);
+      setIssues(result.data);
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [selectedProject]);
+
+  useEffect(() => {
+    //console.log(issues);
+  }, []);
 
   const handleChange = event => {
     setSelectedProject(event.target.value);
