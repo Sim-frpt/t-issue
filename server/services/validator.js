@@ -26,7 +26,7 @@ exports.createUser = [
   .isEmail()
   //.normalizeEmail({ gmail_remove_dots: false }) TODO reactivate when done testing
   .custom(async (email) => {
-     return await isMailAlreadyInUse(email);
+     return await checkMail(email);
   }),
   check('password', 'Password must be at least 8 characters long')
   .isLength({ min: 8, max: 50 }),
@@ -83,16 +83,18 @@ exports.createIssue = [
   })
 ];
 
-async function isMailAlreadyInUse(email) {
+async function checkMail(email) {
   try {
     const user = await User.findByMail(email);
+    debug(user);
 
     if (user !== null) {
-      return true;
+      return Promise.reject('Email is already registered');
     }
 
-    return Promise.reject('Email is already registered');
+    return true;
   } catch (err) {
+
     debug(err);
     return err;
   }

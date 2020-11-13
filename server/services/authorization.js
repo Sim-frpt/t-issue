@@ -21,7 +21,8 @@ exports.isAdmin = (req, res, next) => {
 async function isProjectAdmin(projectId, userId) {
     const actualAdmin = await Project
       .findById(projectId)
-      .then(result => result.admin_id);
+      .then(result => result.admin_id)
+      .catch(err => false);
 
     if (actualAdmin === userId) {
       return true;

@@ -5,6 +5,8 @@ require('dotenv').config();
 const faker = require('faker');
 const debug = require('debug')('t-issue:db-dummy');
 const db = require('../config/db');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 function createProjectData() {
   const names = [];
@@ -45,12 +47,19 @@ function createUserData() {
     let roles = [ contributor, developer, projectManager, admin ];
     let results = [];
 
+    try {
+      password = await bcrypt.hash('fakeuser', saltRounds);
+    } catch (err) {
+      next(err);
+    }
+
     for (let role of roles) {
       let queryResult =  await t.one(insertQuery, [
         faker.name.firstName(),
         faker.name.lastName(),
         faker.internet.email(),
-        faker.internet.password(),
+        password,
+        //faker.internet.password(),
         role[0].role_id
       ]);
 
