@@ -1,10 +1,10 @@
 const db = require.main.require('./config/db');
 const debug = require('debug')('t-issue:projectModel');
 
-exports.create = async (name, adminId) => {
+exports.create = async (name, description) => {
   const query = {
-    text: 'INSERT INTO project(name, admin_id) VALUES($1, $2) RETURNING project_id',
-    values: [ name, adminId ]
+    text: 'INSERT INTO project(name, description) VALUES($1, $2) RETURNING project_id',
+    values: [ name, description ]
   };
 
   try {
@@ -35,7 +35,9 @@ exports.delete = async projectId =>  {
 };
 
 exports.findAll = async () => {
-  const query = 'SELECT p.name, u.first_name || \' \' || u.last_name as member, r.name as role FROM project p INNER JOIN projects_users p_u ON p.project_id = p_u.project_id INNER JOIN "user" u ON u.user_id = p_u.user_id INNER JOIN role r on u.role_id = r.role_id';
+  //const query = 'SELECT p.name, u.first_name || \' \' || u.last_name as member, r.name as role FROM project p INNER JOIN projects_users p_u ON p.project_id = p_u.project_id INNER JOIN "user" u ON u.user_id = p_u.user_id INNER JOIN role r on u.role_id = r.role_id';
+
+  const query = 'SELECT * FROM project';
 
   try {
     const results = await db.any(query);
@@ -117,10 +119,10 @@ exports.insertIntoJoinTable = async (projectId, userId) => {
   }
 }
 
-exports.update = async (id, name) => {
+exports.update = async (id, name, description) => {
   const query = {
-    text: 'UPDATE project SET name = $1 WHERE project_id = $2 RETURNING project_id',
-    values: [ name, id ]
+    text: 'UPDATE project SET name = $1, description = $2 WHERE project_id = $3 RETURNING project_id',
+    values: [ name, description, id ]
   };
 
   try {

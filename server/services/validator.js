@@ -59,7 +59,9 @@ exports.createProject = [
   .escape()
   .trim(),
   check('description')
-  .isLength({ max: 1000 }).withMessage('Description must be less than 1000 characters'),
+  .isLength({ max: 1000 }).withMessage('Description must be less than 1000 characters')
+  .escape()
+  .trim()
 ];
 
 exports.editProject = exports.createProject;

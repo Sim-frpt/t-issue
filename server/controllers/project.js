@@ -38,10 +38,10 @@ exports.create = async (req, res, next) => {
     return res.status(422).json(errors.array());
   }
 
-  const { name } = req.body;
+  const { name, description } = req.body;
 
   try {
-    const result = await Project.create(name, req.user.user_id);
+    const result = await Project.create(name, description);
 
     return res.json(result);
   } catch (err) {
@@ -78,14 +78,6 @@ exports.edit = async (req, res, next) => {
   try {
     const currentProject = await Project.findById(req.params.id);
 
-    // If logged in user is not the admin of the project
-    if (req.user.user_id !== currentProject.admin_id) {
-      const error = new Error('Forbidden');
-      error.status = 403;
-
-      next(error);
-    }
-
     if (currentProject == null) {
       const error = new Error('Project not found');
       error.status = 404;
@@ -104,21 +96,13 @@ exports.edit = async (req, res, next) => {
   @route PUT /api/projects/:id
 */
 exports.update = async (req, res, next) => {
-  // If logged in user is not the admin of the project. Project admin is a hidden form input that has to be parsed to become an int
-  if (req.user.user_id !== parseInt(req.body.admin_id)) {
-    const error = new Error('Forbidden');
-    error.status = 403;
-
-    next(error);
-  }
-
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).json(errors.array());
   }
 
-  const { name } = req.body;
+  const { name, description } = req.body;
 
   try {
     const currentProject = await Project.findById(req.params.id);
@@ -130,7 +114,7 @@ exports.update = async (req, res, next) => {
       next(error);
     }
 
-    const result = await Project.update(req.params.id, name);
+    const result = await Project.update(req.params.id, name, description);
 
     return res.json(result);
   } catch (err) {
@@ -149,13 +133,6 @@ exports.destroy = async (req, res, next) => {
     if (projectToDel == null) {
       const error = new Error('Project not found');
       error.status = 404;
-
-      next(error);
-    }
-
-    if (req.user.user_id !== projectToDel.admin_id) {
-      const error = new Error('Forbidden');
-      error.status = 403;
 
       next(error);
     }

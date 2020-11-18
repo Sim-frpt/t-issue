@@ -144,7 +144,10 @@ exports.destroy = async (req, res, next) => {
   }
 };
 
-// list of all the projects the user is a part of (or admin of)
+/*
+  @desc Get user related projects
+  @route get /api/users/:id/projects
+*/
 exports.projectIndex = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);

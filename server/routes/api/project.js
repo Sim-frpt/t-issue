@@ -18,11 +18,11 @@ router.post('/projects', authentication.checkAuth, authorization.isAdmin, valida
 
 router.get('/projects/:id', projectController.show);
 
-router.get('/projects/:id/edit',authentication.checkAuth, projectController.edit);
+router.get('/projects/:id/edit',authentication.checkAuth, authorization.isAdmin, projectController.edit);
 
-router.put('/projects/:id', authentication.checkAuth, validator.editProject, projectController.update);
+router.put('/projects/:id', authentication.checkAuth, authorization.isAdmin, validator.editProject, projectController.update);
 
-router.delete('/projects/:id', authentication.checkAuth, projectController.destroy);
+router.delete('/projects/:id', authentication.checkAuth, authorization.isAdmin, projectController.destroy);
 
 router.post('/projects/:id/issues', authentication.checkAuth, authorization.isAllowedToCreateIssue, upload.single('image'), validator.createIssue, issueController.create);
 
