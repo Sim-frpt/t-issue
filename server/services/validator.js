@@ -33,7 +33,18 @@ exports.createUser = [
   check('password_confirmation', 'Password confirmation must match password field')
   .custom((confirmation, { req }) => {
     if (confirmation !== req.body.password) {
-      return Promise.reject();
+      throw new Error;
+    }
+
+    return true;
+  }),
+  check('admin_password', 'Wrong admin password')
+  .if((value, { req }) => req.body.admin) // Keep validating this field only if admin checkbox is ticked
+  .escape()
+  .trim()
+  .custom(adminPass => {
+    if (adminPass !== process.env.ADMIN_PASS) {
+      throw new Error;
     }
 
     return true;
@@ -46,7 +57,9 @@ exports.createProject = [
   .not().isEmpty().withMessage('Name must not be empty')
   .bail()
   .escape()
-  .trim()
+  .trim(),
+  check('description')
+  .isLength({ max: 1000 }).withMessage('Description must be less than 1000 characters'),
 ];
 
 exports.editProject = exports.createProject;
@@ -86,7 +99,6 @@ exports.createIssue = [
 async function checkMail(email) {
   try {
     const user = await User.findByMail(email);
-    debug(user);
 
     if (user !== null) {
       return Promise.reject('Email is already registered');

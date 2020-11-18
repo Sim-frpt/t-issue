@@ -82,22 +82,22 @@ exports.findByName = async name => {
   }
 };
 
-exports.findByAdmin = async adminId => {
-  const query = {
-    text: 'SELECT * FROM project WHERE admin_id = $1',
-    values: [ adminId ]
-  };
+//exports.findByAdmin = async adminId => {
+  //const query = {
+    //text: 'SELECT * FROM project WHERE admin_id = $1',
+    //values: [ adminId ]
+  //};
 
-  try {
-    const result = await db.any(query);
+  //try {
+    //const result = await db.any(query);
 
-    return result;
-  } catch (err) {
-    debug('ERROR:', err);
+    //return result;
+  //} catch (err) {
+    //debug('ERROR:', err);
 
-    return err.message || err;
-  }
-}
+    //return err.message || err;
+  //}
+//}
 
 // TODO maybe delete this, or maybe I'll need it for something else
 exports.insertIntoJoinTable = async (projectId, userId) => {

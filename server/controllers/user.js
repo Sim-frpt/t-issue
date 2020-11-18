@@ -1,5 +1,6 @@
 const User = require.main.require('./db/models/user');
 const Project = require.main.require('./db/models/project');
+const Role = require.main.require('./db/models/role');
 
 const debug = require('debug')('t-issue:userController');
 const { validationResult } = require('express-validator');
@@ -41,7 +42,12 @@ exports.create = async (req, res, next) => {
     return res.status(422).json(errors.array());
   }
 
-  let { first_name: firstName, last_name: lastName, email, password, roleId = 1 } = req.body;
+  const adminId = await Role.findRoleId('admin');
+  const contributorId = await Role.findRoleId('contributor');
+
+  let roleId = req.body.admin ? adminId : contributorId;
+
+  let { first_name: firstName, last_name: lastName, email, password } = req.body;
 
   try {
     password = await bcrypt.hash(req.body.password, saltRounds);
@@ -138,6 +144,7 @@ exports.destroy = async (req, res, next) => {
   }
 };
 
+// list of all the projects the user is a part of (or admin of)
 exports.projectIndex = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -148,14 +155,14 @@ exports.projectIndex = async (req, res, next) => {
       next(error);
     }
 
-    // We query for projects the user is part of if he is not admin. If he is we query projects based on the admin id
+    // We query for projects the user is part of if he is not admin. If he is, by default all projects are his
     let userProjects;
 
     if (user.role === 'admin') {
-      userProjects = await Project.findByAdmin(user.user_id);
-    } else {
-      userProjects = await User.getUserProjects(req.params.id);
+      userProjects = await Project.findAll();
     }
+
+    userProjects = await User.getUserProjects(req.params.id);
 
 
     res.json(userProjects);
