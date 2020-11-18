@@ -40,7 +40,7 @@ CREATE TABLE "user" (
 CREATE TABLE "project" (
   project_id serial PRIMARY KEY,
   name varchar(100) UNIQUE NOT NULL,
-  admin_id INTEGER REFERENCES "user" (user_id) NOT NULL
+  description varchar(2000)
 );
 
 CREATE TABLE "projects_users" (

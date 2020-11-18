@@ -9,19 +9,13 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 function createProjectData() {
-  const names = [];
-
-  for (let i = 0; i < 5; i++) {
-    names[i] = faker.lorem.words();
-  }
+  const projectCount = 5;
 
   return db.tx(async t => {
-    let admins = await t.any('SELECT user_id FROM "user" u INNER JOIN role r ON u.role_id = r.role_id WHERE r.name = \'admin\'');
     let results = [];
 
-    for (let name of names) {
-    let randomAdmin = Math.floor(Math.random() * admins.length);
-      const query = await t.one('INSERT INTO PROJECT(name, admin_id) VALUES($1, $2) RETURNING name', [ name, admins[randomAdmin].user_id ]);
+    for (let i = 0; i < projectCount; i++) {
+      const query = await t.one('INSERT INTO PROJECT(name, description) VALUES($1, $2) RETURNING *', [ faker.lorem.words(), faker.lorem.paragraph() ]);
 
       results.push(query);
     }
@@ -35,7 +29,7 @@ function createProjectData() {
 }
 
 function createUserData() {
-  let selectQuery = 'SELECT role_id from role WHERE name = $1';
+  let selectQuery = 'SELECT role_id FROM role WHERE name = $1';
   let insertQuery = 'INSERT INTO "user"(first_name, last_name, email, password, role_id) VALUES($1, $2, $3, $4, $5) RETURNING *';
 
   return db.tx(async t => {
@@ -53,26 +47,20 @@ function createUserData() {
       next(err);
     }
 
+    // make it so we have 3 of each roles
     for (let role of roles) {
-      let queryResult =  await t.one(insertQuery, [
-        faker.name.firstName(),
-        faker.name.lastName(),
-        faker.internet.email(),
-        password,
-        //faker.internet.password(),
-        role[0].role_id
-      ]);
+      for (let i = 0; i < 3; i++) {
+        let queryResult = await t.one(insertQuery, [
+          faker.name.firstName(),
+          faker.name.lastName(),
+          faker.internet.email(),
+          password,
+          role[0].role_id
+        ]);
 
-      results.push(queryResult);
+        results.push(queryResult);
+      }
     }
-    // Add another admin, so that I have at leat 2 to choose from to attach a project to
-    let newAdmin = await t.one(insertQuery, [
-      faker.name.firstName(),
-      faker.name.lastName(),
-      faker.internet.email(),
-      faker.internet.password(),
-      admin[0].role_id
-    ]);
 
     return results;
   }).then(data => {
@@ -84,18 +72,20 @@ function createUserData() {
 
 function createProjectsUsersData() {
   return db.tx(async t => {
-    let projects = await t.any('SELECT project_id from project');
+    let projects = await t.any('SELECT project_id FROM project');
     let users = await t.any('SELECT user_id FROM "user" u INNER JOIN role r ON u.role_id = r.role_id WHERE r.name != \'admin\'');
+
     let results = [];
 
     for (let project of projects) {
 
       // random number of users to assign to a project
-      let usersNumber = Math.floor(Math.random() * (users.length));
-      // array that will track what users have already been assigned to current project
+      let userCount = Math.floor(Math.random() * (users.length));
+
+      // array that will track which users have already been assigned to current project
       let pickedUsers = [];
 
-      for (let i = 0; i <= usersNumber; i++) {
+      for (let i = 0; i <= userCount; i++) {
         let randomUserIndex = Math.floor(Math.random() * (users.length));
 
         if (pickedUsers.includes(users[randomUserIndex].user_id)) {
@@ -121,39 +111,44 @@ function createProjectsUsersData() {
 
 function createIssueData() {
   return db.tx(async t => {
-    let users = await t.any('SELECT user_id from "user"');
-    let tags = await t.any('SELECT tag_id from "tag"');
-    let priorities = await t.any('SELECT priority_id from "priority"');
-    let projects = await t.any('SELECT project_id from "project"');
-    let statuses = await t.any('SELECT status_id from "status"');
+    let tags = await t.any('SELECT tag_id FROM "tag"');
+    let priorities = await t.any('SELECT priority_id FROM "priority"');
+    let projects = await t.any('SELECT project_id FROM "project"');
+    let statuses = await t.any('SELECT status_id FROM "status"');
+
+    let issuesNumber = 5;
 
     let results = [];
 
-    for (let i = 0; i < 16; i++) {
-      let randomUsersIndex = Math.floor(Math.random() * users.length);
-      let randomTagsIndex = Math.floor(Math.random() * tags.length);
-      let randomPrioritiesIndex = Math.floor(Math.random() * priorities.length);
-      let randomProjectsIndex = Math.floor(Math.random() * projects.length);
-      let randomStatusesIndex = Math.floor(Math.random() * statuses.length);
+    for (let project of projects) {
+      // Select users if they are part of the project or if they are admin
+      let users = await t.any('SELECT user_id FROM projects_users WHERE project_id = $1 UNION SELECT user_id FROM "user" u INNER JOIN role r ON u.role_id = r.role_id WHERE r.name = \'admin\'', [project.project_id]);
 
-      let query = await t.one(
-        'INSERT INTO issue(title, description, image, tag_id, assignee_id, creator_id, priority_id, project_id, status_id, created) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
-        [
-          faker.lorem.words(),
-          faker.lorem.paragraph(),
-          faker.system.fileName(),
-          tags[randomTagsIndex].tag_id,
-          users[randomUsersIndex].user_id,
-          users[randomUsersIndex].user_id,
-          priorities[randomPrioritiesIndex].priority_id,
-          projects[randomProjectsIndex].project_id,
-          statuses[randomStatusesIndex].status_id,
-          faker.date.between('2020-01-01', '2020-05-20')
-        ]);
+      for (let i = 0; i < issuesNumber; i++) {
+        let randomAssigneeIndex = Math.floor(Math.random() * users.length);
+        let randomCreatorIndex = Math.floor(Math.random() * users.length);
+        let randomTagsIndex = Math.floor(Math.random() * tags.length);
+        let randomPrioritiesIndex = Math.floor(Math.random() * priorities.length);
+        let randomStatusesIndex = Math.floor(Math.random() * statuses.length);
 
-      results.push(query);
+        let query = await t.one(
+          'INSERT INTO issue(title, description, image, tag_id, assignee_id, creator_id, priority_id, project_id, status_id, created) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+          [
+            faker.lorem.words(),
+            faker.lorem.paragraph(),
+            faker.system.fileName(),
+            tags[randomTagsIndex].tag_id,
+            users[randomAssigneeIndex].user_id,
+            users[randomCreatorIndex].user_id,
+            priorities[randomPrioritiesIndex].priority_id,
+            project.project_id,
+            statuses[randomStatusesIndex].status_id,
+            faker.date.between('2020-01-01', '2020-05-20')
+          ]);
+
+        results.push(query);
+      }
     }
-
     return results;
   })
     .then(data => {
@@ -165,26 +160,29 @@ function createIssueData() {
 
 function createCommentData() {
   return db.tx(async t => {
-    let users = await t.any('SELECT user_id from "user"');
-    let issues = await t.any('SELECT issue_id from "issue"');
-
+    let issues = await t.any('SELECT issue_id, project_id FROM "issue"');
+    let commentCount = 3;
     let results = [];
 
-    for (let i = 0; i < 10; i++) {
-      let ramdomUsersIndex = Math.floor(Math.random() * users.length);
-      let randomIssuesIndex = Math.floor(Math.random() * issues.length);
+    for (let issue of issues) {
+      // Get users that are part of the project the issue is a part of, or that are admin
+      let users = await t.any('SELECT user_id FROM projects_users WHERE project_id = $1 UNION SELECT user_id FROM "user" u INNER JOIN role r ON u.role_id = r.role_id WHERE r.name = \'admin\'', [ issue.project_id ]);
 
-      let query = await t.one(
-        'INSERT INTO comment(text, author_id, issue_id, posted) VALUES($1, $2, $3, $4) RETURNING *',
-        [
-          faker.lorem.sentences(),
-          users[ramdomUsersIndex].user_id,
-          issues[randomIssuesIndex].issue_id,
-          faker.date.between('2020-02-01', '2020-05-20')
-        ]
-      );
+      for (let i = 0; i < commentCount; i++) {
+        let ramdomUsersIndex = Math.floor(Math.random() * users.length);
 
-      results.push(query);
+        let query = await t.one(
+          'INSERT INTO comment(text, author_id, issue_id, posted) VALUES($1, $2, $3, $4) RETURNING *',
+          [
+            faker.lorem.sentences(),
+            users[ramdomUsersIndex].user_id,
+            issue.issue_id,
+            faker.date.between('2020-02-01', '2020-05-20')
+          ]
+        );
+
+        results.push(query);
+      }
     }
 
     return results;
