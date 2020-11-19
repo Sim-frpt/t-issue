@@ -159,14 +159,9 @@ exports.projectIndex = async (req, res, next) => {
     }
 
     // We query for projects the user is part of if he is not admin. If he is, by default all projects are his
-    let userProjects;
-
-    if (user.role === 'admin') {
-      userProjects = await Project.findAll();
-    }
-
-    userProjects = await User.getUserProjects(req.params.id);
-
+    const userProjects = user.role === 'admin' ?
+      await Project.findAll() :
+      await User.getUserProjects(req.params.id);
 
     res.json(userProjects);
   } catch (err) {

@@ -35,7 +35,7 @@ exports.create = async (firstName, lastName, email, password, roleId) => {
 };
 
 exports.findAll = async () => {
-  const query = 'SELECT first_name, last_name, email, password, r.name as role FROM "user" u INNER JOIN role r ON u.role_id = r.role_id';
+  const query = 'SELECT user_id, first_name, last_name, email, password, r.name as role FROM "user" u INNER JOIN role r ON u.role_id = r.role_id';
 
   try {
     const results = await db.any(query);
@@ -80,7 +80,7 @@ exports.findById = async (id) => {
 
 exports.getUserProjects = async (id) => {
   const query = {
-    text: 'SELECT p.project_id, p.name, p.admin_id FROM project p INNER JOIN projects_users pu ON p.project_id = pu.project_id INNER JOIN "user" u ON pu.user_id = u.user_id WHERE u.user_id = $1',
+    text: 'SELECT p.project_id, p.name, p.description FROM project p INNER JOIN projects_users pu ON p.project_id = pu.project_id INNER JOIN "user" u ON pu.user_id = u.user_id WHERE u.user_id = $1',
     values: [ id ]
   };
 

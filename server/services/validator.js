@@ -146,6 +146,7 @@ async function isIdValid(field, fieldId, req) {
     return Promise.reject(`${field} id is invalid`);
   } catch (err) {
     debug(err);
+
     return err;
   }
 }

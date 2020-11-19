@@ -40,9 +40,20 @@ async function isMemberOfProject(projectId, userId) {
     return false;
 }
 
+async function isThisProjectManager(projectId, user) {
+  const isProjectMember = await isMemberOfProject(projectId, user.user_id);
+
+  if (isProjectMember && user.role === 'project manager') {
+    return true;
+  }
+
+  return false;
+}
+
 exports.isAllowedToCreateIssue = async (req, res, next) => {
   try {
-    const isAdmin = await isProjectAdmin(req.params.id, req.user.user_id);
+    const isAdmin = req.user.role === 'admin' ? true : false;
+
     const isMember = await isMemberOfProject(req.params.id, req.user.user_id);
 
     if (!isAdmin && !isMember) {
@@ -72,11 +83,11 @@ exports.isAllowedToDeleteIssue = async (req, res, next) => {
 
     req.currentIssue = currentIssue;
 
-    const isAdmin = await isProjectAdmin(relatedProject.project_id, req.user.user_id);
-
+    const isAdmin = req.user.role === 'admin' ? true : false;
     const isIssueCreator = req.user.user_id === currentIssue.creator_id ? true : false;
+    const isRelatedProjectManager = await isThisProjectManager(relatedProject.project_id, req.user.user_id);
 
-    if (!isAdmin && !isIssueCreator) {
+    if (!isAdmin && !isIssueCreator && !isRelatedProjectManager) {
       const error = new Error('forbidden');
       error.status = 403;
 
