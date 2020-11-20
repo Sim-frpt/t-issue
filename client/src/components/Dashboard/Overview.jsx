@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import FullPageSpinner from 'components/Common/FullPageSpinner';
 import HeroTitle from 'components/Common/HeroTitle';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   Box,
+  Grid,
   Container,
   Paper,
   FormControl,
@@ -11,6 +12,17 @@ import {
   Select,
   MenuItem
 } from'@material-ui/core';
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 
 // Api calls
 import { getIssues } from 'api/issueApi';
@@ -23,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
   },
   selectContainer: {
     textAlign: 'center',
+  },
+  chartsContainer: {
+    flexGrow: 1
   }
 }));
 
@@ -33,6 +48,9 @@ export default function Overview(props) {
   const [ issues, setIssues ] = useState([]);
   const [ isLoading, setIsLoading ] = useState(false);
   const user = props.auth.user;
+  const [ priorityGraphData, setPriorityGraphData ] = useState([]);
+
+  const theme = useTheme();
 
   // Get projects and put them in state
   useEffect(() => {
@@ -69,21 +87,46 @@ export default function Overview(props) {
       };
 
       const result = await getIssues(params);
-      console.log(result);
+
+      setPriorityGraphData(getPriorityGraphData(result.data));
+
       setIssues(result.data);
+
       setIsLoading(false);
     };
 
     fetchData();
+
   }, [selectedProject]);
 
   useEffect(() => {
     //console.log(issues);
-  }, []);
+    //console.log(priorityGraphData);
+  }, [issues]);
 
   const handleChange = event => {
     setSelectedProject(event.target.value);
   };
+
+  function getPriorityGraphData(data) {
+    const holder = {};
+
+    data.forEach(obj => {
+      if (holder.hasOwnProperty(obj.priority)) {
+        holder[obj.priority]++;
+      } else {
+        holder[obj.priority] = 1;
+      }
+    });
+
+    const priorityData = [];
+
+    for (let prop in holder) {
+      priorityData.push({name: prop, value: holder[prop]});
+    }
+
+    return priorityData;
+  }
 
   return (
     isLoading ?
@@ -122,6 +165,18 @@ export default function Overview(props) {
             </Select>
           </FormControl>
         </div>
+        {/*<Grid container spacing={2} className={classes.chartsContainer}>*/}
+          {/*<Grid item xs={12}>*/}
+            <ResponsiveContainer width={"90%"} height={"80%"}>
+              <BarChart data={priorityGraphData}>
+                <XAxis dataKey="name" />
+                <YAxis dataKey="value" />
+                <Bar dataKey="value" fill={theme.palette.secondary.light}/>
+
+              </BarChart>
+            </ResponsiveContainer>
+          {/*</Grid>*/}
+        {/*</Grid>*/}
       </Paper>
     </>
   );
