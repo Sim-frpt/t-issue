@@ -9,8 +9,19 @@ export function getIssues(params = null) {
   if (params) {
     issuesUrl += '?';
     for (const prop in params) {
-      issuesUrl +=`${prop}=${params[prop]}`;
+      if (Array.isArray(params[prop])) {
+        for (let element of params[prop]) {
+          issuesUrl += `${prop}=${element}&`;
+        }
+      } else {
+        issuesUrl +=`${prop}=${params[prop]}&`;
+      }
     }
+  }
+
+  // Remove the last '&' at the end of the query
+  if (issuesUrl.endsWith('&')) {
+    issuesUrl = issuesUrl.slice(0, -1);
   }
 
   return axios({
