@@ -24,10 +24,6 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-// Api calls
-//import { getIssues } from 'api/issueApi';
-//import { getUserProjects } from 'api/userApi';
-
 const useStyles = makeStyles((theme) => ({
   overviewCard: {
     minHeight: '50vh',
@@ -43,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
   chartsPaper: {
     padding: theme.spacing(2),
     textAlign: 'center',
-    //width: '100%',
     height: '20em',
   }
 }));
@@ -52,9 +47,8 @@ export default function Overview(props) {
   const classes = useStyles();
   const [ selectedProject, setSelectedProject ] = useState('');
   //const [ isLoading, setIsLoading ] = useState(false);
-  //const user = props.auth.user;
   const [ priorityGraphData, setPriorityGraphData ] = useState([]);
-  //const [ tagGraphData, setTagGraphData ] = useState([]);
+  const [ tagGraphData, setTagGraphData ] = useState([]);
   //const [ statusGraphData, setStatusGraphData ] = useState([]);
 
   const theme = useTheme();
@@ -65,7 +59,7 @@ export default function Overview(props) {
       return;
     }
     setSelectedProject(props.userProjects[0].project_id);
-  }, []);
+  }, [props.userProjects]);
 
    //Filter issues based on selected project
   useEffect(() => {
@@ -73,13 +67,13 @@ export default function Overview(props) {
       return;
     }
 
-    // TODO check this, looks shaky to filter by project name, but whatever I guess
+    // TODO check this, looks shaky to filter projects by selectedProject name, but whatever I guess
     const selectedProjectName = props.userProjects.filter(project => project.project_id === selectedProject)[0].name;
 
     const issues = props.issues.filter(issues => issues.project === selectedProjectName);
 
     setPriorityGraphData(getPriorityGraphData(issues));
-      //setTagGraphData(getTagGraphData(result.data));
+    setTagGraphData(getTagGraphData(issues));
       //setStatusGraphData(getStatusGraphData(result.data));
       //setIssues(result.data);
 
@@ -88,18 +82,18 @@ export default function Overview(props) {
 
     //fetchData();
 
-  }, [selectedProject]);
+  }, [ selectedProject, props.userProjects, props.issues ]);
 
-  useEffect(() => {
+  //useEffect(() => {
     //console.log(priorityGraphData);
-  }, [selectedProject]);
+  //});
 
   const handleChange = event => {
     setSelectedProject(event.target.value);
   };
 
   function getPriorityGraphData(issues) {
-    //console.log(issues);
+
     const holder = issues.reduce((acc, current) => {
       if (acc.hasOwnProperty(current.priority)) {
         acc[current.priority]++;
@@ -116,7 +110,19 @@ export default function Overview(props) {
       priorityData.push({name: prop, value: holder[prop]});
     }
 
-    return priorityData;
+    const orderedData = [];
+
+    priorityData.forEach(data => {
+      if (data.name === 'low') {
+        orderedData[0] = data;
+      } else if (data.name === 'normal') {
+        orderedData[1] = data;
+      } else {
+        orderedData[2] = data;
+      }
+    });
+
+    return orderedData.filter(data => data.name);
   }
 
   function getStatusGraphData(data) {
@@ -197,29 +203,30 @@ export default function Overview(props) {
           </FormControl>
         </div>
         <Grid container spacing={7} className={classes.chartsContainer}>
-          <Grid item sm={12} md={6} lg={3}>
+          <Grid item sm={12} md={6} lg={4}>
             <Paper className={classes.chartsPaper} variant='outlined'>
               <ResponsiveContainer>
                 <BarChart data={priorityGraphData} barCategoryGap="20%">
-                  <XAxis dataKey="name" />
-                  <YAxis dataKey="value" />
-                  <Legend/>
-                  <Bar dataKey="value" fill={theme.palette.secondary.light} />
+                  <XAxis dataKey="name" tickSize={10} />
+                  <YAxis dataKey="value" allowDecimals={false} />
+                  <Tooltip cursor={{fill: 'transparent'}} />
+                  <Bar dataKey="value" barSize={50} legendType="none" fill={theme.palette.secondary.light} />
                 </BarChart>
               </ResponsiveContainer>
             </Paper>
           </Grid>
-          {/*<Grid item sm={12} sm={6} lg={3}>*/}
-            {/*<Paper className={classes.chartsPaper} variant='outlined'>*/}
-              {/*<ResponsiveContainer>*/}
-                {/*<BarChart data={tagGraphData} barCategoryGap="20%">*/}
-                  {/*<XAxis dataKey="name" />*/}
-                  {/*<YAxis dataKey="value" />*/}
-                  {/*<Bar dataKey="value" fill={theme.palette.secondary.light} />*/}
-                {/*</BarChart>*/}
-              {/*</ResponsiveContainer>*/}
-            {/*</Paper>*/}
-          {/*</Grid>*/}
+          <Grid item sm={12} sm={6} lg={4}>
+            <Paper className={classes.chartsPaper} variant='outlined'>
+              <ResponsiveContainer>
+                <BarChart data={tagGraphData} barCategoryGap="20%">
+                  <XAxis dataKey="name" tickSize={10} />
+                  <YAxis dataKey="value" allowDecimals={false} />
+                  <Tooltip cursor={{fill: 'transparent'}} />
+                  <Bar dataKey="value" barSize={50} fill={theme.palette.secondary.light} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Paper>
+          </Grid>
           {/*<Grid item sm={12} sm={6} lg={3}>*/}
             {/*<Paper className={classes.chartsPaper} variant='outlined'>*/}
               {/*<ResponsiveContainer>*/}

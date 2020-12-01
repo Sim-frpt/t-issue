@@ -31,7 +31,7 @@ export default function Dashboard(props) {
   const [ issues, setIssues ] = useState([]);
   const [ isLoading, setIsLoading ] = useState(false);
 
-  // Get projects and put them in state
+  // Get user projects and put them in state
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -42,8 +42,9 @@ export default function Dashboard(props) {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
+  // Get issues that are related to those projects
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
