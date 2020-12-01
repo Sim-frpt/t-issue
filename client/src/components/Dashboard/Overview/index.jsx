@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import HeroTitle from 'components/Common/HeroTitle';
 import ProjectSelect from './ProjectSelect';
+import IssuesPriorityGraph from './IssuesPriorityGraph';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   Box,
   Container,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Typography
 } from'@material-ui/core';
 import {
@@ -29,10 +26,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '50vh',
     padding: '1em',
   },
-  //selectContainer: {
-    //textAlign: 'center',
-    //marginBottom: '2em',
-  //},
   chartsContainer: {
     flexGrow: 1
   },
@@ -194,42 +187,13 @@ export default function Overview(props) {
           handleChange={handleChange}
           userProjects={userProjects}
         />
-        {/*<div className={classes.selectContainer}>*/}
-          {/*<FormControl>*/}
-            {/*<InputLabel id="project-label">*/}
-              {/*Project*/}
-            {/*</InputLabel>*/}
-            {/*<Select*/}
-              {/*labelId="project-label"*/}
-              {/*id="project-select"*/}
-              {/*value={selectedProject}*/}
-              {/*onChange={handleChange}*/}
-            {/*>*/}
-              {/*{ userProjects.map(project => (*/}
-                {/*<MenuItem*/}
-                  {/*value={project.project_id}*/}
-                  {/*key={project.project_id}*/}
-                {/*>*/}
-                  {/*{project.name}*/}
-                {/*</MenuItem>*/}
-              {/*))*/}
-              {/*}*/}
-            {/*</Select>*/}
-          {/*</FormControl>*/}
-        {/*</div>*/}
         <Grid container spacing={7} className={classes.chartsContainer} justify="center">
           <Grid item sm={12} md={7} lg={5}>
-            <Typography variant="subtitle1" color="textSecondary">Issues by priority</Typography>
-            <Paper className={classes.chartsPaper} variant='outlined'>
-              <ResponsiveContainer>
-                <BarChart data={priorityGraphData} barCategoryGap="20%">
-                  <XAxis dataKey="name" tickSize={10} />
-                  <YAxis dataKey="value" allowDecimals={false} />
-                  <Tooltip itemStyle={{color: theme.palette.primary.dark}} cursor={false} />
-                  <Bar dataKey="value" barSize={50} legendType="none" fill={theme.palette.secondary.light} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Paper>
+            <IssuesPriorityGraph
+              paperClassStyle={classes.chartsPaper}
+              data={priorityGraphData}
+              title="Issues by priority"
+            />
           </Grid>
           <Grid item sm={12} md={7} lg={5}>
             <Typography variant="subtitle1" color="textSecondary">Issues by category</Typography>
