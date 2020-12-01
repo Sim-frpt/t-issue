@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import HeroTitle from 'components/Common/HeroTitle';
+import ProjectSelect from './ProjectSelect';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   Box,
@@ -28,10 +29,10 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '50vh',
     padding: '1em',
   },
-  selectContainer: {
-    textAlign: 'center',
-    marginBottom: '2em',
-  },
+  //selectContainer: {
+    //textAlign: 'center',
+    //marginBottom: '2em',
+  //},
   chartsContainer: {
     flexGrow: 1
   },
@@ -44,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Overview(props) {
   const classes = useStyles();
+  const { userProjects, issues } = props;
   const [ selectedProject, setSelectedProject ] = useState('');
   const [ priorityGraphData, setPriorityGraphData ] = useState([]);
   const [ tagGraphData, setTagGraphData ] = useState([]);
@@ -54,11 +56,11 @@ export default function Overview(props) {
 
   // On mount, set selected project to be the first project
   useEffect(() => {
-    if (props.userProjects.length === 0) {
+    if (userProjects.length === 0) {
       return;
     }
-    setSelectedProject(props.userProjects[0].project_id);
-  }, [props.userProjects]);
+    setSelectedProject(userProjects[0].project_id);
+  }, [userProjects]);
 
   // Filter issues based on selected project
   useEffect(() => {
@@ -67,16 +69,16 @@ export default function Overview(props) {
     }
 
     // TODO check this, looks shaky to filter projects by selectedProject name, but whatever I guess
-    const selectedProjectName = props.userProjects.filter(project => project.project_id === selectedProject)[0].name;
+    const selectedProjectName = userProjects.filter(project => project.project_id === selectedProject)[0].name;
 
-    const issues = props.issues.filter(issues => issues.project === selectedProjectName);
+    const issuesFromProject = props.issues.filter(issues => issues.project === selectedProjectName);
 
-    setPriorityGraphData(getPriorityGraphData(issues));
-    setTagGraphData(getTagGraphData(issues));
-    setStatusGraphData(getStatusGraphData(issues));
-    setProjectGraphData(getProjectGraphData(props.issues));
+    setPriorityGraphData(getPriorityGraphData(issuesFromProject));
+    setTagGraphData(getTagGraphData(issuesFromProject));
+    setStatusGraphData(getStatusGraphData(issuesFromProject));
+    setProjectGraphData(getProjectGraphData(issues));
 
-  }, [ selectedProject, props.userProjects, props.issues ]);
+  }, [ selectedProject, userProjects, props.issues ]);
 
   const handleChange = event => {
     setSelectedProject(event.target.value);
@@ -187,31 +189,36 @@ export default function Overview(props) {
         </Box>
       </Container>
       <Paper className={classes.overviewCard}>
-        <div className={classes.selectContainer}>
-          <FormControl>
-            <InputLabel id="project-label">
-              Project
-            </InputLabel>
-            <Select
-              labelId="project-label"
-              id="project-select"
-              value={selectedProject}
-              onChange={handleChange}
-            >
-              { props.userProjects.map(project => (
-                <MenuItem
-                  value={project.project_id}
-                  key={project.project_id}
-                >
-                  {project.name}
-                </MenuItem>
-              ))
-              }
-            </Select>
-          </FormControl>
-        </div>
-        <Grid container spacing={7} className={classes.chartsContainer}>
-          <Grid item sm={12} md={6} lg={5}>
+        <ProjectSelect
+          selectedProject={selectedProject}
+          handleChange={handleChange}
+          userProjects={userProjects}
+        />
+        {/*<div className={classes.selectContainer}>*/}
+          {/*<FormControl>*/}
+            {/*<InputLabel id="project-label">*/}
+              {/*Project*/}
+            {/*</InputLabel>*/}
+            {/*<Select*/}
+              {/*labelId="project-label"*/}
+              {/*id="project-select"*/}
+              {/*value={selectedProject}*/}
+              {/*onChange={handleChange}*/}
+            {/*>*/}
+              {/*{ userProjects.map(project => (*/}
+                {/*<MenuItem*/}
+                  {/*value={project.project_id}*/}
+                  {/*key={project.project_id}*/}
+                {/*>*/}
+                  {/*{project.name}*/}
+                {/*</MenuItem>*/}
+              {/*))*/}
+              {/*}*/}
+            {/*</Select>*/}
+          {/*</FormControl>*/}
+        {/*</div>*/}
+        <Grid container spacing={7} className={classes.chartsContainer} justify="center">
+          <Grid item sm={12} md={7} lg={5}>
             <Typography variant="subtitle1" color="textSecondary">Issues by priority</Typography>
             <Paper className={classes.chartsPaper} variant='outlined'>
               <ResponsiveContainer>
@@ -224,7 +231,7 @@ export default function Overview(props) {
               </ResponsiveContainer>
             </Paper>
           </Grid>
-          <Grid item sm={12} md={6} lg={7}>
+          <Grid item sm={12} md={7} lg={5}>
             <Typography variant="subtitle1" color="textSecondary">Issues by category</Typography>
             <Paper className={classes.chartsPaper} variant='outlined'>
               <ResponsiveContainer>
@@ -237,7 +244,7 @@ export default function Overview(props) {
               </ResponsiveContainer>
             </Paper>
           </Grid>
-          <Grid item sm={12} md={6} lg={5} >
+          <Grid item sm={12} md={7} lg={5} >
             <Typography variant="subtitle1" color="textSecondary">Issues by status</Typography>
             <Paper className={classes.chartsPaper} variant='outlined'>
               <ResponsiveContainer>
@@ -250,7 +257,7 @@ export default function Overview(props) {
               </ResponsiveContainer>
             </Paper>
           </Grid>
-          <Grid item sm={12} md={6} lg={5} >
+          <Grid item sm={12} md={7} lg={5} >
             <Typography variant="subtitle1" color="textSecondary">Issues by project</Typography>
             <Paper className={classes.chartsPaper} variant='outlined'>
               <ResponsiveContainer>
