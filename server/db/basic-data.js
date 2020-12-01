@@ -7,7 +7,7 @@ const db = require('../config/db');
 
 function createStatusData() {
   db.tx(async t => {
-    let a = await t.one('INSERT INTO status(name) VALUES($1) RETURNING name', ['new']);
+    let a = await t.one('INSERT INTO status(name) VALUES($1) RETURNING name', ['open']);
     let b = await t.one('INSERT INTO status(name) VALUES($1) RETURNING name',
       ['in progress']);
     let c = await t.one('INSERT INTO status(name) VALUES($1) RETURNING name',
