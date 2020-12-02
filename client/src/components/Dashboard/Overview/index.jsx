@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HeroTitle from 'components/Common/HeroTitle';
 import ProjectSelect from './ProjectSelect';
-import IssuesPriorityGraph from './IssuesPriorityGraph';
+import IssuesBarGraph from './IssuesBarGraph';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   Box,
@@ -66,88 +66,41 @@ export default function Overview(props) {
 
     const issuesFromProject = props.issues.filter(issues => issues.project === selectedProjectName);
 
-    setPriorityGraphData(getPriorityGraphData(issuesFromProject));
-    setTagGraphData(getTagGraphData(issuesFromProject));
-    setStatusGraphData(getStatusGraphData(issuesFromProject));
+    const priorityOrder = [ 'low', 'normal', 'high' ];
+    const tagOrder = [ 'bug', 'feature request', 'training/documentation request', 'other' ];
+    const statusOrder = [ 'open', 'in progress', 'resolved', 'closed' ];
+
+    setPriorityGraphData(getIssueGraphData(issuesFromProject, 'priority', priorityOrder));
+    setTagGraphData(getIssueGraphData(issuesFromProject, 'tag', tagOrder));
+    setStatusGraphData(getIssueGraphData(issuesFromProject, 'status', statusOrder));
     setProjectGraphData(getProjectGraphData(issues));
 
-  }, [ selectedProject, userProjects, props.issues ]);
+  }, [ selectedProject, userProjects, issues ]);
 
   const handleChange = event => {
     setSelectedProject(event.target.value);
   };
 
-  function getPriorityGraphData(issues) {
-
-    const holder = issues.reduce((acc, current) => {
-      if (acc.hasOwnProperty(current.priority)) {
-        acc[current.priority]++;
-      } else {
-        acc[current.priority] = 1;
-      }
-
-      return acc;
-    }, {});
-
-    const priorityData = [];
-
-    for (let prop in holder) {
-      priorityData.push({name: prop, value: holder[prop]});
-    }
-
-    const orderedData = [];
-
-    priorityData.forEach(data => {
-      if (data.name === 'low') {
-        orderedData[0] = data;
-      } else if (data.name === 'normal') {
-        orderedData[1] = data;
-      } else {
-        orderedData[2] = data;
-      }
-    });
-
-    return orderedData.filter(data => data.name);
-  }
-
-  function getStatusGraphData(data) {
+  function getIssueGraphData(data, sortingKey, sortOrder) {
     const holder = data.reduce((acc, current) => {
-      if (acc.hasOwnProperty(current.status)) {
-        acc[current.status]++;
+      if (acc.hasOwnProperty(current[sortingKey])) {
+        acc[current[sortingKey]].count++;
       } else {
-        acc[current.status] = 1;
+        acc[current[sortingKey]] = {};
+        acc[current[sortingKey]].count = 1;
+        acc[current[sortingKey]].order = sortOrder.indexOf(current[sortingKey]);
       }
 
       return acc;
     }, {});
 
-    const StatusData = [];
+    const graphData = [];
 
     for (let prop in holder) {
-      StatusData.push({name: prop, value: holder[prop]});
+      graphData[holder[prop].order] = { name: prop, value: holder[prop].count };
     }
 
-    return StatusData;
-  }
-
-  function getTagGraphData(data) {
-    const holder = data.reduce((acc, current) => {
-      if (acc.hasOwnProperty(current.tag)) {
-        acc[current.tag]++;
-      } else {
-        acc[current.tag] = 1;
-      }
-
-      return acc;
-    }, {});
-
-    const tagData = [];
-
-    for (let prop in holder) {
-      tagData.push({name: prop, value: holder[prop]});
-    }
-
-    return tagData;
+    return graphData.filter(data => data !== undefined);
   }
 
   function getProjectGraphData(data) {
@@ -189,37 +142,25 @@ export default function Overview(props) {
         />
         <Grid container spacing={7} className={classes.chartsContainer} justify="center">
           <Grid item sm={12} md={7} lg={5}>
-            <IssuesPriorityGraph
+            <IssuesBarGraph
               paperClassStyle={classes.chartsPaper}
               data={priorityGraphData}
               title="Issues by priority"
             />
           </Grid>
           <Grid item sm={12} md={7} lg={5}>
-            <Typography variant="subtitle1" color="textSecondary">Issues by category</Typography>
-            <Paper className={classes.chartsPaper} variant='outlined'>
-              <ResponsiveContainer>
-                <BarChart data={tagGraphData} barCategoryGap="20%">
-                  <XAxis dataKey="name" tickSize={10} />
-                  <YAxis dataKey="value" allowDecimals={false} />
-                  <Tooltip itemStyle={{color: theme.palette.primary.dark}} cursor={false} />
-                  <Bar dataKey="value" barSize={50} fill={theme.palette.secondary.light} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Paper>
+            <IssuesBarGraph
+              paperClassStyle={classes.chartsPaper}
+              data={tagGraphData}
+              title="Issues by tag"
+            />
           </Grid>
           <Grid item sm={12} md={7} lg={5} >
-            <Typography variant="subtitle1" color="textSecondary">Issues by status</Typography>
-            <Paper className={classes.chartsPaper} variant='outlined'>
-              <ResponsiveContainer>
-                <BarChart data={statusGraphData} barCategoryGap="20%">
-                  <XAxis dataKey="name" tickSize={10}/>
-                  <YAxis dataKey="value" allowDecimals={false} />
-                  <Tooltip itemStyle={{color: theme.palette.primary.dark}} cursor={false} />
-                  <Bar dataKey="value" barSize={50} fill={theme.palette.secondary.light} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Paper>
+            <IssuesBarGraph
+              paperClassStyle={classes.chartsPaper}
+              data={statusGraphData}
+              title="Issues by status"
+            />
           </Grid>
           <Grid item sm={12} md={7} lg={5} >
             <Typography variant="subtitle1" color="textSecondary">Issues by project</Typography>

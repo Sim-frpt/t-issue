@@ -1,9 +1,7 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import {
-  Paper,
-  Typography,
-} from '@material-ui/core';
+import MinorTitle from 'components/Common/MinorTitle'; 
+import { Paper } from '@material-ui/core';
 import {
   Bar,
   BarChart,
@@ -13,15 +11,15 @@ import {
   YAxis
 } from 'recharts';
 
-export default function IssuesPriorityGraph({paperClassStyle, data, title}) {
+export default function IssuesBarGraph({paperClassStyle, data, title}) {
   const theme = useTheme();
 
   return (
     <>
-      <Typography variant="subtitle1" color="textSecondary">{title}</Typography>
+      <MinorTitle title={title} />
       <Paper className={paperClassStyle} variant='outlined'>
         <ResponsiveContainer>
-          <BarChart data={data} barCategoryGap="20%">
+          <BarChart data={data}>
             <XAxis dataKey="name" tickSize={10} />
             <YAxis dataKey="value" allowDecimals={false} />
             <Tooltip itemStyle={{color: theme.palette.primary.dark}} cursor={false} />
