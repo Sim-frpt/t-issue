@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import HeroTitle from 'components/Common/HeroTitle';
 import ProjectSelect from './ProjectSelect';
 import IssuesBarGraph from './IssuesBarGraph';
+import IssuesPieGraph from './IssuesPieGraph';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
   Box,
@@ -44,8 +45,6 @@ export default function Overview(props) {
   const [ tagGraphData, setTagGraphData ] = useState([]);
   const [ statusGraphData, setStatusGraphData ] = useState([]);
   const [ projectGraphData, setProjectGraphData ] = useState([]);
-
-  const theme = useTheme();
 
   // On mount, set selected project to be the first project
   useEffect(() => {
@@ -163,16 +162,11 @@ export default function Overview(props) {
             />
           </Grid>
           <Grid item sm={12} md={7} lg={5} >
-            <Typography variant="subtitle1" color="textSecondary">Issues by project</Typography>
-            <Paper className={classes.chartsPaper} variant='outlined'>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie data={projectGraphData} dataKey="value" fill={theme.palette.secondary.light} />
-                  <Tooltip itemStyle={{color: theme.palette.primary.dark}} cursor={false} />
-                  <Bar dataKey="value" barSize={50} fill={theme.palette.secondary.light} />
-                </PieChart>
-              </ResponsiveContainer>
-            </Paper>
+            <IssuesPieGraph
+              paperClassStyle={classes.chartsPaper}
+              data={projectGraphData}
+              title="Issues by project"
+            />
           </Grid>
         </Grid>
       </Paper>
