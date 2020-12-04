@@ -14,6 +14,9 @@ const projectRouter = require('./routes/api/project');
 const commentRouter = require('./routes/api/comment');
 const issueRouter = require('./routes/api/issue');
 const sessionRouter = require('./routes/api/session');
+const priorityRouter = require('./routes/api/priority');
+const tagRouter = require('./routes/api/tag');
+const statusRouter = require('./routes/api/status');
 
 const app = express();
 
@@ -50,7 +53,7 @@ app.get('/', (req, res) => {
 });
 
 // Route handlers
-app.use('/api', userRouter, projectRouter, commentRouter, issueRouter, sessionRouter);
+app.use('/api', userRouter, projectRouter, commentRouter, issueRouter, priorityRouter, sessionRouter, statusRouter, tagRouter);
 
 app.use((req, res, next) => {
   const error = new Error("Not Found");
