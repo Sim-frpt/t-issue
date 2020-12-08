@@ -153,28 +153,28 @@ export default function Overview(props) {
                   value={selectedProject.project_id}
                 />
                 <Grid container spacing={7} className={classes.chartsContainer} justify="center">
-                  <Grid item sm={12} md={7} lg={4}>
+                  <Grid item sm={12} lg={5}>
                     <IssuesBarGraph
                       paperClassStyle={classes.chartsPaper}
                       data={priorityGraphData}
                       title="Issues by priority"
                     />
                   </Grid>
-                  <Grid item sm={12} md={7} lg={7}>
+                  <Grid item sm={12} lg={7}>
                     <IssuesBarGraph
                       paperClassStyle={classes.chartsPaper}
                       data={tagGraphData}
                       title="Issues by tag"
                     />
                   </Grid>
-                  <Grid item sm={12} md={7} lg={5} >
+                  <Grid item sm={12} lg={6} >
                     <IssuesBarGraph
                       paperClassStyle={classes.chartsPaper}
                       data={statusGraphData}
                       title="Issues by status"
                     />
                   </Grid>
-                  <Grid item sm={12} md={7} lg={6} >
+                  <Grid item sm={12} lg={6} >
                     <IssuesPieGraph
                       paperClassStyle={classes.chartsPaper}
                       data={projectGraphData}
