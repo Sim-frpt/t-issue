@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from 'react';
+
 import HeroTitle from 'components/Common/HeroTitle';
+import Alert from 'components/Common/Alert';
 import ProjectSelect from './ProjectSelect';
 import IssuesBarGraph from './IssuesBarGraph';
 import IssuesPieGraph from './IssuesPieGraph';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   Box,
   Container,
   Grid,
   Paper,
-  Typography
 } from'@material-ui/core';
-import {
-  BarChart,
-  Bar,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 
 const useStyles = makeStyles((theme) => ({
   overviewCard: {
@@ -39,20 +30,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Overview(props) {
   const classes = useStyles();
-  const { userProjects, issues } = props;
-  const [ selectedProject, setSelectedProject ] = useState('');
+  const { userProjects, issues, priorities, status, tags } = props;
+
+  const [ selectedProject, setSelectedProject ] = useState(userProjects[0]);
   const [ priorityGraphData, setPriorityGraphData ] = useState([]);
   const [ tagGraphData, setTagGraphData ] = useState([]);
   const [ statusGraphData, setStatusGraphData ] = useState([]);
   const [ projectGraphData, setProjectGraphData ] = useState([]);
-
-  // On mount, set selected project to be the first project
-  useEffect(() => {
-    if (userProjects.length === 0) {
-      return;
-    }
-    setSelectedProject(userProjects[0].project_id);
-  }, [userProjects]);
+  const [ open, setOpen ] = useState(false);
 
   // Filter issues based on selected project
   useEffect(() => {
@@ -60,46 +45,59 @@ export default function Overview(props) {
       return;
     }
 
-    // TODO check this, looks shaky to filter projects by selectedProject name, but whatever I guess
-    const selectedProjectName = userProjects.filter(project => project.project_id === selectedProject)[0].name;
+    const issuesFromProject = issues.filter(issues => issues.project === selectedProject.name);
 
-    const issuesFromProject = props.issues.filter(issues => issues.project === selectedProjectName);
+    const basePriorityData = getNormalizedBaseGraphData(priorities, 'priority_id');
+    const baseTagData = getNormalizedBaseGraphData(tags, 'tag_id');
+    const baseStatusData = getNormalizedBaseGraphData(status, 'status_id');
 
-    const priorityOrder = [ 'low', 'normal', 'high' ];
-    const tagOrder = [ 'bug', 'feature request', 'training/documentation request', 'other' ];
-    const statusOrder = [ 'open', 'in progress', 'resolved', 'closed' ];
-
-    setPriorityGraphData(getIssueGraphData(issuesFromProject, 'priority', priorityOrder));
-    setTagGraphData(getIssueGraphData(issuesFromProject, 'tag', tagOrder));
-    setStatusGraphData(getIssueGraphData(issuesFromProject, 'status', statusOrder));
+    setPriorityGraphData(getIssueGraphData(issuesFromProject, basePriorityData, 'priority',));
+    setTagGraphData(getIssueGraphData(issuesFromProject, baseTagData, 'tag'));
+    setStatusGraphData(getIssueGraphData(issuesFromProject, baseStatusData, 'status'));
     setProjectGraphData(getProjectGraphData(issues));
-
-  }, [ selectedProject, userProjects, issues ]);
+  }, [ selectedProject, userProjects, issues, priorities, status, tags ]);
 
   const handleChange = event => {
-    setSelectedProject(event.target.value);
+    const newProject = userProjects.filter(proj => proj.project_id === event.target.value)[0];
+
+    setSelectedProject(newProject);
   };
 
-  function getIssueGraphData(data, sortingKey, sortOrder) {
-    const holder = data.reduce((acc, current) => {
-      if (acc.hasOwnProperty(current[sortingKey])) {
-        acc[current[sortingKey]].count++;
-      } else {
-        acc[current[sortingKey]] = {};
-        acc[current[sortingKey]].count = 1;
-        acc[current[sortingKey]].order = sortOrder.indexOf(current[sortingKey]);
-      }
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-      return acc;
-    }, {});
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  function getNormalizedBaseGraphData(data, dataOrderKey) {
+    return data
+      .sort((a, b) => a[dataOrderKey] < b[dataOrderKey])
+      .reduce((acc, curr) => {
+        acc[curr.name] = 0;
+
+        return acc;
+      }, {});
+  }
+
+  function getIssueGraphData(projectIssues, baseData, dataKey) {
+    projectIssues.forEach(issue => {
+      if (baseData.hasOwnProperty(issue[dataKey])) {
+        baseData[issue[dataKey]]++;
+      }
+    });
 
     const graphData = [];
 
-    for (let prop in holder) {
-      graphData[holder[prop].order] = { name: prop, value: holder[prop].count };
+    for (let prop in baseData) {
+      graphData.push({
+        name: prop,
+        value: baseData[prop]
+      });
     }
 
-    return graphData.filter(data => data !== undefined);
+    return graphData;
   }
 
   function getProjectGraphData(data) {
@@ -119,57 +117,74 @@ export default function Overview(props) {
       projectData.push({name: prop, value: holder[prop]});
     }
 
+    // Only keep the 10 biggest projects if we have too many
+    const projectLimit = 10;
+
+    if (projectData.length > projectLimit) {
+      return projectData.sort((a, b) => b.value - a.value).slice(0, projectLimit);
+    }
+
     return projectData;
   }
 
   return (
-    <>
-      <Container>
-        <Box
-          textAlign="center"
-          display="flex"
-          justifyContent="center"
-        >
-          <HeroTitle title='Overview'/>
-        </Box>
-      </Container>
-      <Paper className={classes.overviewCard}>
-        <ProjectSelect
-          selectedProject={selectedProject}
-          handleChange={handleChange}
-          userProjects={userProjects}
-        />
-        <Grid container spacing={7} className={classes.chartsContainer} justify="center">
-          <Grid item sm={12} md={7} lg={5}>
-            <IssuesBarGraph
-              paperClassStyle={classes.chartsPaper}
-              data={priorityGraphData}
-              title="Issues by priority"
-            />
-          </Grid>
-          <Grid item sm={12} md={7} lg={5}>
-            <IssuesBarGraph
-              paperClassStyle={classes.chartsPaper}
-              data={tagGraphData}
-              title="Issues by tag"
-            />
-          </Grid>
-          <Grid item sm={12} md={7} lg={5} >
-            <IssuesBarGraph
-              paperClassStyle={classes.chartsPaper}
-              data={statusGraphData}
-              title="Issues by status"
-            />
-          </Grid>
-          <Grid item sm={12} md={7} lg={5} >
-            <IssuesPieGraph
-              paperClassStyle={classes.chartsPaper}
-              data={projectGraphData}
-              title="Issues by project"
-            />
-          </Grid>
-        </Grid>
-      </Paper>
-    </>
+      <>
+        <Container>
+          <Box
+            textAlign="center"
+            display="flex"
+            justifyContent="center"
+          >
+            <HeroTitle title='Overview'/>
+          </Box>
+        </Container>
+        <Paper className={classes.overviewCard}>
+          {!selectedProject
+            ?
+              <Alert severity="info" text="No projects to display data for"/>
+            :
+              <>
+                <ProjectSelect
+                  handleChange={handleChange}
+                  handleClose={handleClose}
+                  handleOpen={handleOpen}
+                  open={open}
+                  userProjects={userProjects}
+                  value={selectedProject.project_id}
+                />
+                <Grid container spacing={7} className={classes.chartsContainer} justify="center">
+                  <Grid item sm={12} md={7} lg={4}>
+                    <IssuesBarGraph
+                      paperClassStyle={classes.chartsPaper}
+                      data={priorityGraphData}
+                      title="Issues by priority"
+                    />
+                  </Grid>
+                  <Grid item sm={12} md={7} lg={7}>
+                    <IssuesBarGraph
+                      paperClassStyle={classes.chartsPaper}
+                      data={tagGraphData}
+                      title="Issues by tag"
+                    />
+                  </Grid>
+                  <Grid item sm={12} md={7} lg={5} >
+                    <IssuesBarGraph
+                      paperClassStyle={classes.chartsPaper}
+                      data={statusGraphData}
+                      title="Issues by status"
+                    />
+                  </Grid>
+                  <Grid item sm={12} md={7} lg={6} >
+                    <IssuesPieGraph
+                      paperClassStyle={classes.chartsPaper}
+                      data={projectGraphData}
+                      title="Issues by project"
+                    />
+                  </Grid>
+                </Grid>
+              </>
+          }
+        </Paper>
+      </>
   );
 }

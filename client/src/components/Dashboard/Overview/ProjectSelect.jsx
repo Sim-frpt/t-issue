@@ -16,19 +16,20 @@ const useStyles = makeStyles({
 
 export default function ProjectSelect(props) {
   const classes = useStyles();
-  const { selectedProject, handleChange, userProjects } = props;
+  const { handleChange, open, handleClose, handleOpen, userProjects, value } = props;
 
   return (
     <div className={classes.selectContainer}>
       <FormControl>
-        <InputLabel id="project-label">
-          Project
-        </InputLabel>
+        <InputLabel id="project-label">Project</InputLabel>
         <Select
           labelId="project-label"
           id="project-select"
-          value={selectedProject}
+          value={value}
           onChange={handleChange}
+          open={open}
+          onClose={handleClose}
+          onOpen={handleOpen}
         >
           { userProjects.map(project => (
             <MenuItem

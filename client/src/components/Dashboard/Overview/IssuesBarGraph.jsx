@@ -21,7 +21,7 @@ export default function IssuesBarGraph({paperClassStyle, data, title}) {
       <Paper className={paperClassStyle} variant='outlined'>
         <ResponsiveContainer>
           <BarChart data={data}>
-            <XAxis dataKey="name" tickSize={10} tick={{ fill: primaryDark }} stroke={primaryDark}/>
+            <XAxis dataKey="name" tickSize={10} tick={{ fill: primaryDark }} stroke={primaryDark} />
             <YAxis dataKey="value" allowDecimals={false} tick={{ fill: primaryDark }} />
             <Tooltip itemStyle={{ color: primaryDark }} cursor={false} />
             <Bar dataKey="value" barSize={50} legendType="none" fill={theme.palette.secondary.light} />

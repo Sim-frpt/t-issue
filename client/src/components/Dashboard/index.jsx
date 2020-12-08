@@ -8,7 +8,12 @@ import { AuthContext } from 'AuthContext';
 import { makeStyles } from '@material-ui/core/styles';
 
 // Api calls
-import { getIssues } from 'api/issueApi';
+import {
+  getIssues,
+  getIssuePriorities,
+  getIssueStatus,
+  getIssueTags
+} from 'api/issueApi';
 import { getUserProjects } from 'api/userApi';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,6 +34,10 @@ export default function Dashboard() {
 
   const [ userProjects, setUserProjects ] = useState([]);
   const [ issues, setIssues ] = useState([]);
+  const [ priorities, setPriorities ] = useState([]);
+  const [ status, setStatus ] = useState([]);
+  const [ tags, setTags ] = useState([]);
+
   const [ isLoading, setIsLoading ] = useState(false);
 
   // Get user projects and put them in state
@@ -37,12 +46,13 @@ export default function Dashboard() {
       setIsLoading(true);
 
       const result = await getUserProjects(user.user_id);
+
       setUserProjects(result.data);
       setIsLoading(false);
     };
 
     fetchData();
-  }, [user]);
+  }, [ user ]);
 
   // Get issues that are related to those projects
   useEffect(() => {
@@ -63,7 +73,50 @@ export default function Dashboard() {
 
     fetchData();
 
-  }, [userProjects]);
+  }, [ userProjects ]);
+
+  // Get priorities
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+
+      const result = await getIssuePriorities();
+
+      setPriorities(result.data);
+
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  // Get tags
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+
+      const result = await getIssueTags();
+
+      setTags(result.data);
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  // Get status
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+
+      const result = await getIssueStatus();
+
+      setStatus(result.data);
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -84,7 +137,15 @@ export default function Dashboard() {
                 exact
                 path={`${path}/overview`}
                 render={(props) => (
-                  <Overview {...props} auth={auth} userProjects={userProjects} issues={issues}/>
+                  <Overview
+                    {...props}
+                    auth={auth}
+                    userProjects={userProjects}
+                    issues={issues}
+                    priorities={priorities}
+                    status={status}
+                    tags={tags}
+                  />
                 )}
               />
             </Switch>
