@@ -17,7 +17,7 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('lg')]: {
       width: drawerWidth,
       flexShrink: 0
     },
@@ -30,16 +30,13 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     marginLeft: theme.spacing(2),
     padding: 0,
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('lg')]: {
       display: 'none',
     },
   },
   // necessary for content to be below app bar
   offset: {
     ...theme.mixins.toolbar,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    }
   },
   drawerPaper: {
     width: drawerWidth,
@@ -73,7 +70,7 @@ export default function Sidebar(props) {
 
   return (
     <>
-      <Hidden smUp>
+      <Hidden lgUp>
 	<Container className={classes.iconContainer}>
 	  <IconButton
 	    color="inherit"
@@ -90,33 +87,33 @@ export default function Sidebar(props) {
 	</Container>
       </Hidden>
       <nav className={classes.drawer} aria-label="mailbox folders">
-	<Hidden smUp>
-	  <Drawer
-	    variant="temporary"
-	    anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-	    open={mobileOpen}
-	    onClose={handleDrawerToggle}
-	    classes={{
-	      paper: classes.drawerPaper,
-	    }}
-	    ModalProps={{
-	      keepMounted: true, // Better open performance on mobile.
-	    }}
-	  >
-	    {drawer}
-	  </Drawer>
-	</Hidden>
-	<Hidden xsDown>
-	  <Drawer
-	    classes={{
-	      paper: classes.drawerPaper,
-	    }}
-	    variant="permanent"
-	    open
-	  >
-	    {drawer}
-	  </Drawer>
-	</Hidden>
+        <Hidden mdUp>
+          <Drawer
+            variant="temporary"
+            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+        <Hidden mdDown>
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
       </nav>
     </>
   );
