@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
-import { Container, Box, Typography } from '@material-ui/core';
+import { Container, Box } from '@material-ui/core';
 import SignInForm from './SignInForm';
 import { AuthContext } from 'AuthContext';
 import { Redirect } from 'react-router-dom';
-import HeroTitle from 'components/Common/HeroTitle';
+import { HeroTitle, MinorTitle } from 'components/Common/';
 
 export default function SignIn() {
 
-  const [ auth ] = useContext(AuthContext);
+  const [ auth, ] = useContext(AuthContext);
 
   if (auth.authenticated) {
     return <Redirect to="/"/>;
@@ -29,12 +29,7 @@ export default function SignIn() {
           <HeroTitle
             title="Sign In"
           />
-          <Typography
-            variant="subtitle1"
-            color="textSecondary"
-          >
-            No account yet? Register
-          </Typography>
+          <MinorTitle title="No account yet? Register"/>
         </Box>
       </Container>
       <Container maxWidth="xs">
