@@ -51,5 +51,5 @@ exports.destroy = async (req, res, next) => {
   }
 
   req.logout();
-  res.status(200).json('Session destroyed');
+  res.status(200).json({ message: 'Session destroyed' });
 };

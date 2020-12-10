@@ -7,23 +7,23 @@ import { AuthContext } from 'AuthContext';
 export default function SignInForm() {
   const { register, handleSubmit, errors, reset } = useForm();
   const [ error, setError ] = useState(null);
-  const [, setAuth ] = useContext(AuthContext);
+  const [ , setAuth ] = useContext(AuthContext);
   const emailRef = useRef();
 
   const onSubmit = async data => {
     try {
-      await signIn(data)
-        .then((result) => {
-          setAuth(prevState => {
-            return {
-              ...prevState,
-              authenticated: true,
-              user: result.data
-            };
-          })
+      const result = await signIn(data);
 
-          reset();
-        });
+      // Await SetAuth removes "state update in unmounted component" warning, but there is no redirect to dashboard then
+      setAuth(prevState => {
+        return {
+          ...prevState,
+          authenticated: true,
+          user: result.data
+        }
+      });
+
+      reset();
     } catch (err) {
       setError(err.response.data.error.message);
       reset({'email': data.email});

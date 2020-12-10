@@ -38,7 +38,7 @@ export function AuthProvider(props) {
         });
       } finally {
         setState(prevState =>  {
-          return {...prevState, isLoading: false};
+          return { ...prevState, isLoading: false };
         });
       }
     };

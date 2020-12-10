@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import SignIn from './components/SignIn';
+import SignOut from './components/SignOut';
 import NavBar from './components/Common/NavBar';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/helpers/PrivateRoute';
@@ -24,6 +25,7 @@ function App() {
         <div className={classes.offset}/>
         <Switch>
           <Route exact path="/sign-in" component={SignIn}/>
+          <Route exact path="/sign-out" component={SignOut}/>
           <PrivateRoute path="/dashboard" component={Dashboard}/>
           <Route exact path="/">
             <Redirect to="/dashboard"/>

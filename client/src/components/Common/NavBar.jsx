@@ -85,7 +85,7 @@ function NavBar(props) {
             <>
               <IconButton
                 edge="start"
-                //className={classes.menuButton}
+                className={classes.menuButton}
                 color="inherit"
                 aria-label="menu"
                 onClick={handleMenu}

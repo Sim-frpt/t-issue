@@ -16,6 +16,14 @@ export function signIn(data) {
   });
 }
 
+export function signOut() {
+  return axios({
+    method: 'delete',
+    url: `${apiUrl}/sessions`,
+    withCredentials: true
+  });
+}
+
 export function checkAuth() {
   return axios({
     url: `${apiUrl}/sessions`,
